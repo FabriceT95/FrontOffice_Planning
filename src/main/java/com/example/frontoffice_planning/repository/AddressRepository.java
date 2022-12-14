@@ -1,2 +1,13 @@
-package com.example.frontoffice_planning.repository;public interface AddressRepository {
+package com.example.frontoffice_planning.repository;
+
+import com.example.frontoffice_planning.entity.Address;
+import com.example.frontoffice_planning.entity.Users;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface AddressRepository extends JpaRepository<Address, Long> {
+    Optional<Address> findByCityEqualsAndPostalCodeEquals(String city, String postalCode);
 }

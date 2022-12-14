@@ -1,9 +1,6 @@
-package Entity;
+package com.example.frontoffice_planning.entity;
 
 import jakarta.persistence.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity(name="Share")
 @Table(name="share")

@@ -1,8 +1,6 @@
-package Entity;
+package com.example.frontoffice_planning.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.NaturalIdCache;
 
 import java.time.LocalDate;
 import java.util.*;

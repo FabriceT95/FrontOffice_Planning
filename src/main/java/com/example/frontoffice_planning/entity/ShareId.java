@@ -1,4 +1,4 @@
-package Entity;
+package com.example.frontoffice_planning.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

@@ -1,2 +1,4 @@
-package com.example.controller;public class PlanningController {
+package com.example.frontoffice_planning.controller;
+
+public class PlanningController {
 }

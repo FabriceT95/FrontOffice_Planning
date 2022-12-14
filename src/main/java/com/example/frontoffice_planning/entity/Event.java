@@ -1,8 +1,7 @@
-package Entity;
+package com.example.frontoffice_planning.entity;
 
 import jakarta.persistence.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 
 @Entity
