@@ -3,6 +3,7 @@ package com.example.frontoffice_planning.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Event {
@@ -12,8 +13,7 @@ public class Event {
     private Long idEvent;
     @Basic
     @Column(name = "date_created")
-    private LocalDate dateCreated;
-
+    private LocalDateTime dateCreated;
 
     @ManyToOne
     @JoinColumn(name = "id_action", referencedColumnName = "id_action", nullable = false)
@@ -27,6 +27,15 @@ public class Event {
     @JoinColumn(name="id_planning", referencedColumnName = "id_planning", nullable = false)
     private Planning planning;
 
+    @ManyToOne
+    @JoinColumn(name = "id_event", referencedColumnName = "id_event", nullable = false)
+    private Users user;
+
+    public Event(LocalDateTime dateCreated, Action action) {
+        this.dateCreated = dateCreated;
+        this.action = action;
+    }
+
     public Long getIdEvent() {
         return idEvent;
     }
@@ -35,14 +44,17 @@ public class Event {
         this.idEvent = idEvent;
     }
 
-    public LocalDate getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(LocalDate dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
+    public Event(){
+
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -86,5 +98,13 @@ public class Event {
 
     public void setPlanning(Planning planning) {
         this.planning = planning;
+    }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
     }
 }

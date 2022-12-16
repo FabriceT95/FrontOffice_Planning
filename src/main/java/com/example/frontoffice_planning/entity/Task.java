@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,13 +20,13 @@ public class Task {
     private String nameTask;
     @Basic
     @Column(name = "date_created")
-    private LocalDate dateCreated;
+    private LocalDateTime dateCreated;
     @Basic
     @Column(name = "date_task_start")
-    private Timestamp dateTaskStart;
+    private LocalDateTime dateTaskStart;
     @Basic
     @Column(name = "date_task_end")
-    private Timestamp dateTaskEnd;
+    private LocalDateTime dateTaskEnd;
     @Basic
     @Column(name = "description")
     private String description;
@@ -53,27 +54,27 @@ public class Task {
         this.nameTask = nameTask;
     }
 
-    public LocalDate getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(LocalDate dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    public Timestamp getDateTaskStart() {
+    public LocalDateTime getDateTaskStart() {
         return dateTaskStart;
     }
 
-    public void setDateTaskStart(Timestamp dateTaskStart) {
+    public void setDateTaskStart(LocalDateTime dateTaskStart) {
         this.dateTaskStart = dateTaskStart;
     }
 
-    public Timestamp getDateTaskEnd() {
+    public LocalDateTime getDateTaskEnd() {
         return dateTaskEnd;
     }
 
-    public void setDateTaskEnd(Timestamp dateTaskEnd) {
+    public void setDateTaskEnd(LocalDateTime dateTaskEnd) {
         this.dateTaskEnd = dateTaskEnd;
     }
 
@@ -116,7 +117,7 @@ public class Task {
         return result;
     }
 
-    public Collection<Event> getEventsByIdTask() {
+    public List<Event> getEventsByIdTask() {
         return events;
     }
 
@@ -132,5 +133,7 @@ public class Task {
         this.planning = planningByIdPlanning;
     }
 
-
+    public void addEvent(Event event){
+        this.events.add(event);
+    }
 }

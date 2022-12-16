@@ -1,2 +1,4 @@
-package com.example.frontoffice_planning.controller.models;public class ShareDTO {
+package com.example.frontoffice_planning.controller.models;
+
+public class ShareDTO {
 }

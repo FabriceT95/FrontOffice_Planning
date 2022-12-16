@@ -1,36 +1,23 @@
 package com.example.frontoffice_planning.service;
 
-import com.example.frontoffice_planning.entity.Address;
-import com.example.frontoffice_planning.entity.Planning;
-import com.example.frontoffice_planning.entity.Users;
-import com.example.frontoffice_planning.repository.AddressRepository;
-import com.example.frontoffice_planning.repository.PlanningRepository;
-import com.example.frontoffice_planning.repository.RoleRepository;
-import com.example.frontoffice_planning.repository.UserRepository;
+import com.example.frontoffice_planning.entity.Task;
+import com.example.frontoffice_planning.repository.TaskRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.Optional;
-
 @Service
-public class UserService {
+public class TaskService {
 
-    private final UserRepository userRepository;
-    private final PlanningRepository planningRepository;
-    private final AddressRepository addressRepository;
-
-    public UserService(UserRepository userRepository, PlanningRepository planningRepository, AddressRepository addressRepository) {
-        this.userRepository = userRepository;
-        this.planningRepository = planningRepository;
-        this.addressRepository = addressRepository;
+    private final TaskRepository taskRepository;
+    public TaskService(TaskRepository TaskRepository) {
+        this.taskRepository = TaskRepository;
     }
 
     @Transactional
-    public Users createUser(Users user) {
-        return userRepository.save(user);
+    public Task createTask(Task task) {
+        return taskRepository.save(task);
     }
+
+    @Transactional
+    public void delete(Task task){taskRepository.delete(task);}
 }

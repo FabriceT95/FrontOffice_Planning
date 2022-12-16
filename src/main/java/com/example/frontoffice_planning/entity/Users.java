@@ -2,7 +2,7 @@ package com.example.frontoffice_planning.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity(name="Users")
@@ -32,7 +32,7 @@ public class Users {
 
     @Basic
     @Column(name = "date_last_login")
-    private LocalDate dateLastLogin;
+    private LocalDateTime dateLastLogin;
 
     @Basic
     @Column(name="is_activated", nullable = false)
@@ -55,6 +55,8 @@ public class Users {
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Share> share = new ArrayList<>();
 
+    @OneToMany(mappedBy = "users")
+    private List<Event> events = new ArrayList<>();
 
     public Users() {
     }
@@ -63,7 +65,7 @@ public class Users {
         this.email = email;
     }
 
-    public Users(Long idUser, String pseudo, String email, byte[] password, String photo, LocalDate dateLastLogin, Address address, Planning planning) {
+    public Users(Long idUser, String pseudo, String email, byte[] password, String photo, LocalDateTime dateLastLogin, Address address, Planning planning) {
         this.idUser = idUser;
         this.pseudo = pseudo;
         this.email = email;
@@ -94,7 +96,7 @@ public class Users {
         this.planning = planning;
     }
 
-    public Users(Long idUser, String pseudo, String email, LocalDate dateLastLogin){
+    public Users(Long idUser, String pseudo, String email, LocalDateTime dateLastLogin){
         this.idUser = idUser;
         this.pseudo = pseudo;
         this.email = email;
@@ -181,11 +183,11 @@ public class Users {
         this.photo = photo;
     }
 
-    public LocalDate getDateLastLogin() {
+    public LocalDateTime getDateLastLogin() {
         return dateLastLogin;
     }
 
-    public void setDateLastLogin(LocalDate dateLastLogin) {
+    public void setDateLastLogin(LocalDateTime dateLastLogin) {
         this.dateLastLogin = dateLastLogin;
     }
 
@@ -222,6 +224,18 @@ public class Users {
             return false;
 
         return true;
+    }
+
+    public List<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<Event> events) {
+        this.events = events;
+    }
+
+    public void addEvent(Event event){
+        this.events.add(event);
     }
 
     @Override

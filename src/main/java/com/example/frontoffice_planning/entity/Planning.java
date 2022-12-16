@@ -3,6 +3,7 @@ package com.example.frontoffice_planning.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +21,7 @@ public class Planning {
     private String namePlanning;
     @Basic
     @Column(name = "date_created")
-    private LocalDate dateCreated;
+    private LocalDateTime dateCreated;
 
     @OneToOne(mappedBy = "planning")
     private Users user;
@@ -62,7 +63,7 @@ public class Planning {
     private Set<Share> share = new HashSet<>();
 
 
-    public Planning(String namePlanning, LocalDate dateCreated) {
+    public Planning(String namePlanning, LocalDateTime dateCreated) {
         this.namePlanning = namePlanning;
         this.dateCreated = dateCreated;
     }
@@ -70,13 +71,13 @@ public class Planning {
     public Planning() {
     }
 
-    public Planning(Long idPlanning, String namePlanning, LocalDate dateCreated) {
+    public Planning(Long idPlanning, String namePlanning, LocalDateTime dateCreated) {
         this.idPlanning = idPlanning;
         this.namePlanning = namePlanning;
         this.dateCreated = dateCreated;
     }
 
-    public Planning(Long idPlanning, String namePlanning, LocalDate dateCreated, Users user) {
+    public Planning(Long idPlanning, String namePlanning, LocalDateTime dateCreated, Users user) {
         this.idPlanning = idPlanning;
         this.namePlanning = namePlanning;
         this.dateCreated = dateCreated;
@@ -103,11 +104,11 @@ public class Planning {
         this.namePlanning = namePlanning;
     }
 
-    public LocalDate getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(LocalDate dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
