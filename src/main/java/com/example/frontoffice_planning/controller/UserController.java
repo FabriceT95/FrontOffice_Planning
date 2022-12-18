@@ -1,5 +1,6 @@
 package com.example.frontoffice_planning.controller;
 
+import com.example.frontoffice_planning.controller.models.AddressDTO;
 import com.example.frontoffice_planning.controller.models.UsersDTO;
 import com.example.frontoffice_planning.entity.Address;
 import com.example.frontoffice_planning.entity.Planning;
@@ -21,6 +22,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("http://localhost:4200")
@@ -46,34 +48,66 @@ public class UserController {
         this.planningService = planningService;
     }
 
+
+    // Need to verify if user is current session to get password, otherwise don't take password here
     @GetMapping("/users/id/{id}")
-    public ResponseEntity<Users> getUserById(@PathVariable("id") long id) {
+    public ResponseEntity<UsersDTO> getUserById(@PathVariable("id") long id) {
         Optional<Users> user = userRepository.findById(id);
 
         if (user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(user.get());
+            Users userEntity = user.get();
+            UsersDTO usersDTO = new UsersDTO();
+            usersDTO.setIdUser(userEntity.getIdUser());
+            usersDTO.setPseudo(userEntity.getPseudo());
+            usersDTO.setEmail(userEntity.getEmail());
+            //   usersDTO.setPassword(userEntity.getPassword());
+            usersDTO.setPhoto(userEntity.getPhoto());
+            usersDTO.setAddressDTO(new AddressDTO(userEntity.getAddress().getCity(), userEntity.getAddress().getPostalCode()));
+            usersDTO.setPlanningId(userEntity.getPlanning().getIdPlanning());
+            usersDTO.setSharedPlanningId(userEntity.getShare().stream().map(share -> share.getPlanning().getIdPlanning()).collect(Collectors.toList()));
+            return ResponseEntity.status(HttpStatus.OK).body(usersDTO);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
     }
 
+    // Not needed
     @GetMapping("/users/name/{name}")
-    public ResponseEntity<Users> getUserByName(@PathVariable("name") String name) {
+    public ResponseEntity<UsersDTO> getUserByName(@PathVariable("name") String name) {
         Optional<Users> user = userRepository.findByPseudoEquals(name);
 
         if (user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(user.get());
+            Users userEntity = user.get();
+            UsersDTO usersDTO = new UsersDTO();
+            usersDTO.setIdUser(userEntity.getIdUser());
+            usersDTO.setPseudo(userEntity.getPseudo());
+            usersDTO.setEmail(userEntity.getEmail());
+            usersDTO.setPhoto(userEntity.getPhoto());
+            usersDTO.setAddressDTO(new AddressDTO(userEntity.getAddress().getCity(), userEntity.getAddress().getPostalCode()));
+            usersDTO.setPlanningId(userEntity.getPlanning().getIdPlanning());
+            usersDTO.setSharedPlanningId(userEntity.getShare().stream().map(share -> share.getPlanning().getIdPlanning()).collect(Collectors.toList()));
+            return ResponseEntity.status(HttpStatus.OK).body(usersDTO);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
     }
 
+    // Not needed
     @GetMapping("/users/email/{email}")
-    public ResponseEntity<Users> getUserByEmail(@PathVariable("email") String email) {
+    public ResponseEntity<UsersDTO> getUserByEmail(@PathVariable("email") String email) {
         Optional<Users> user = userRepository.findByEmailEquals(email);
 
         if (user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(user.get());
+            Users userEntity = user.get();
+            UsersDTO usersDTO = new UsersDTO();
+            usersDTO.setIdUser(userEntity.getIdUser());
+            usersDTO.setPseudo(userEntity.getPseudo());
+            usersDTO.setEmail(userEntity.getEmail());
+            usersDTO.setPhoto(userEntity.getPhoto());
+            usersDTO.setAddressDTO(new AddressDTO(userEntity.getAddress().getCity(), userEntity.getAddress().getPostalCode()));
+            usersDTO.setPlanningId(userEntity.getPlanning().getIdPlanning());
+            usersDTO.setSharedPlanningId(userEntity.getShare().stream().map(share -> share.getPlanning().getIdPlanning()).collect(Collectors.toList()));
+            return ResponseEntity.status(HttpStatus.OK).body(usersDTO);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
@@ -96,7 +130,7 @@ public class UserController {
         newUser.setActivated(true);
         newUser.addRole(roleRepository.findById(1L).get());
 
-        Address addressDTO = new Address(usersDTO.getCity(), usersDTO.getPostalCode());
+        Address addressDTO = new Address(usersDTO.getAddressDTO().getCity(), usersDTO.getAddressDTO().getPostalCode());
 
         Address address = addressService.createAddress(addressDTO);
         newUser.setAddress(address);
@@ -107,6 +141,6 @@ public class UserController {
 
         userService.createUser(newUser);
 
-        return  ResponseEntity.status(HttpStatus.OK).body(newUser);
+        return ResponseEntity.status(HttpStatus.OK).body(newUser);
     }
 }

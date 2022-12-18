@@ -108,6 +108,14 @@ public class Planning {
         return dateCreated;
     }
 
+    public Set<Share> getShare() {
+        return share;
+    }
+
+    public void setShare(Set<Share> share) {
+        this.share = share;
+    }
+
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }

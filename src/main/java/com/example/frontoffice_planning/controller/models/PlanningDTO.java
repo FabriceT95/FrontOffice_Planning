@@ -8,9 +8,13 @@ public class PlanningDTO {
 
     private long idPlanning;
 
+    private long idOwner;
+
     private String namePlanning;
 
     private LocalDateTime dateCreated;
+
+    private boolean isReadOnly;
 
     private List<TaskDTO> taskList = new ArrayList<>();
 
@@ -27,6 +31,14 @@ public class PlanningDTO {
         this.idPlanning = idPlanning;
     }
 
+    public long getIdOwner() {
+        return idOwner;
+    }
+
+    public void setIdOwner(long idOwner) {
+        this.idOwner = idOwner;
+    }
+
     public String getNamePlanning() {
         return namePlanning;
     }
@@ -41,5 +53,29 @@ public class PlanningDTO {
 
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        isReadOnly = readOnly;
+    }
+
+    public List<TaskDTO> getTaskList() {
+        return taskList;
+    }
+
+    public void setTaskList(List<TaskDTO> taskList) {
+        this.taskList = taskList;
+    }
+
+    public List<ShareDTO> getShareList() {
+        return shareList;
+    }
+
+    public void setShareList(List<ShareDTO> shareList) {
+        this.shareList = shareList;
     }
 }

@@ -2,6 +2,9 @@ package com.example.frontoffice_planning.controller.models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UsersDTO {
 
     public UsersDTO() {
@@ -17,9 +20,12 @@ public class UsersDTO {
 
     private String photo;
 
-    private String city;
+    private AddressDTO addressDTO;
 
-    private String postalCode;
+    private Long planningId;
+
+    private List<Long> sharedPlanningId = new ArrayList<>();
+
 
     public Long getIdUser() {
         return idUser;
@@ -61,19 +67,26 @@ public class UsersDTO {
         this.photo = photo;
     }
 
-    public String getCity() {
-        return city;
+    public AddressDTO getAddressDTO() {
+        return addressDTO;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setAddressDTO(AddressDTO addressDTO) {
+        this.addressDTO = addressDTO;
+    }
+    public Long getPlanningId() {
+        return planningId;
     }
 
-    public String getPostalCode() {
-        return postalCode;
+    public void setPlanningId(Long planningId) {
+        this.planningId = planningId;
     }
 
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
+    public List<Long> getSharedPlanningId() {
+        return sharedPlanningId;
+    }
+
+    public void setSharedPlanningId(List<Long> sharedPlanningId) {
+        this.sharedPlanningId = sharedPlanningId;
     }
 }
