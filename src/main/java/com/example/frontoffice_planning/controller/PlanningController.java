@@ -82,10 +82,49 @@ public class PlanningController {
     // We can do 2 request : One specified for the owner, and other one for any shared people
     // Or just one mixing both
     // PARAMS IN PROGRESS
-    @PutMapping("/planning/auth")
-    public ResponseEntity<PlanningDTO> updatePlanning(@RequestBody ShareDTO shareDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(new PlanningDTO());
+    @PutMapping("/planning/auth?name={name}")
+    public ResponseEntity<PlanningDTO> updatePlanningName(@PathVariable("name") String name, @RequestBody ShareDTO shareDTO) {
+        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
+        Optional<Planning> optPlanning = planningService.getPlanningById(shareDTO.getPlanningId());
+        // Need security : Verify if user has access with his id to this planning
+        if (optUser.isPresent() && optPlanning.isPresent()) {
+            Optional<Share> optShare = shareService.getShareByPlanningAndUser(optPlanning.get(), optUser.get());
+            if (optShare.isPresent()) {
+                Planning planning = optPlanning.get();
+                planning = planningService.updatePlanningName(planning, name);
+
+                PlanningDTO planningDTO = new PlanningDTO();
+                planningDTO.setIdPlanning(planning.getIdPlanning());
+                planningDTO.setNamePlanning(planning.getNamePlanning());
+                planningDTO.setDateCreated(planning.getDateCreated());
+                planningDTO.setIdOwner(planning.getUser().getIdUser());
+                planningDTO.setReadOnly(optShare.get().getIsReadOnly());
+
+                return ResponseEntity.status(HttpStatus.OK).body(planningDTO);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
+
+    // Create a new share
+    // Verify if this request comes from the owner
+    @PutMapping("/planning/new_share")
+    public ResponseEntity<PlanningDTO> addNewShareToPlanning(@RequestBody ShareDTO shareDTO) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    // Delete existing share
+    // Verify if this request comes from the owner
+    //// MAYBE CREATE A CONTROLLER FOR SHARE ??
+    @DeleteMapping("/planning/new_share")
+    public ResponseEntity<PlanningDTO> deleteShareFromPlanning(@RequestBody ShareDTO shareDTO) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+
 
 
 }

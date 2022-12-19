@@ -7,6 +7,8 @@ import java.util.List;
 public class TaskDTO {
     private Long idTask;
 
+    private Long idPlanning;
+
     private String nameTask;
 
     private LocalDateTime dateCreated;
@@ -16,6 +18,7 @@ public class TaskDTO {
     private LocalDateTime dateTaskEnd;
 
     private String description;
+
 
     private List<EventDTO> eventList = new ArrayList<>();
 
@@ -27,6 +30,14 @@ public class TaskDTO {
     }
     public void setIdTask(Long idTask) {
         this.idTask = idTask;
+    }
+
+    public Long getIdPlanning() {
+        return idPlanning;
+    }
+
+    public void setIdPlanning(Long idPlanning) {
+        this.idPlanning = idPlanning;
     }
 
     public String getNameTask() {
@@ -75,5 +86,9 @@ public class TaskDTO {
 
     public void setEventList(List<EventDTO> eventList) {
         this.eventList = eventList;
+    }
+
+    public void addEvent(EventDTO event) {
+        this.eventList.add(event);
     }
 }

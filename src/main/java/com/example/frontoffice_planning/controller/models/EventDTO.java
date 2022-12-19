@@ -5,9 +5,13 @@ import java.time.LocalDateTime;
 public class EventDTO {
     private Long idEvent;
 
+    private Long idPlanning;
+
     private LocalDateTime dateCreated;
 
+
     private ActionDTO actionDTO;
+
 
     public EventDTO() {
 
@@ -27,6 +31,14 @@ public class EventDTO {
 
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public Long getIdPlanning() {
+        return idPlanning;
+    }
+
+    public void setIdPlanning(Long idPlanning) {
+        this.idPlanning = idPlanning;
     }
 
     public ActionDTO getActionDTO() {

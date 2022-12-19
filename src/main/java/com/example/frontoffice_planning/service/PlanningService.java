@@ -24,4 +24,9 @@ public class PlanningService {
     }
 
     public Optional<Planning> getPlanningById(Long id) { return planningRepository.findById(id);}
+
+    public Planning updatePlanningName(Planning planning, String name) {
+        planning.setNamePlanning(name);
+        return planningRepository.save(planning);
+    }
 }
