@@ -23,6 +23,11 @@ public class PlanningService {
         return planningRepository.save(planning);
     }
 
+    @Transactional
+    public Planning save(Planning planning){
+        return planningRepository.save(planning);
+    }
+
     public Optional<Planning> getPlanningById(Long id) { return planningRepository.findById(id);}
 
     public Planning updatePlanningName(Planning planning, String name) {

@@ -9,9 +9,11 @@ import com.example.frontoffice_planning.entity.Planning;
 import com.example.frontoffice_planning.entity.Share;
 import com.example.frontoffice_planning.entity.Task;
 import com.example.frontoffice_planning.entity.Users;
+import com.example.frontoffice_planning.repository.ShareRepository;
 import com.example.frontoffice_planning.service.PlanningService;
 import com.example.frontoffice_planning.service.ShareService;
 import com.example.frontoffice_planning.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,11 +32,13 @@ public class PlanningController {
     private final PlanningService planningService;
 
     private final ShareService shareService;
+    private final ShareRepository shareRepository;
 
-    public PlanningController(UserService userService, PlanningService planningService, ShareService shareService) {
+    public PlanningController(UserService userService, PlanningService planningService, ShareService shareService, ShareRepository shareRepository) {
         this.userService = userService;
         this.planningService = planningService;
         this.shareService = shareService;
+        this.shareRepository = shareRepository;
     }
 
     // Maybe allowing the owner to get by this path aswell ?
@@ -48,7 +52,7 @@ public class PlanningController {
      * @return PlanningDTO Planning object with all tasks and basic attributes
      */
     @GetMapping("/planning/auth")
-    public ResponseEntity<PlanningDTO> getPlanningByShare(@RequestBody ShareDTO shareDTO) {
+    public ResponseEntity<PlanningDTO> getPlanningByShare(@Valid @RequestBody ShareDTO shareDTO) {
         Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
         Optional<Planning> optPlanning = planningService.getPlanningById(shareDTO.getPlanningId());
         // Need security : Verify if user has access with his id to this planning
@@ -107,7 +111,7 @@ public class PlanningController {
      * @return PlanningDTO Planning object with all tasks and basic attributes
      */
     @PutMapping("/planning/auth?name={name}")
-    public ResponseEntity<PlanningDTO> updatePlanningName(@PathVariable("name") String name, @RequestBody ShareDTO shareDTO) {
+    public ResponseEntity<PlanningDTO> updatePlanningName(@PathVariable("name") String name, @Valid @RequestBody ShareDTO shareDTO) {
         Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
         Optional<Planning> optPlanning = planningService.getPlanningById(shareDTO.getPlanningId());
         // Need security : Verify if user has access with his id to this planning
@@ -151,8 +155,24 @@ public class PlanningController {
      * @return PlanningDTO Planning object with all tasks and basic attributes + updated list of share if success
      */
     @PutMapping("/planning/new_share")
-    public ResponseEntity<PlanningDTO> addNewShareToPlanning(@RequestBody ShareDTO shareDTO) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<ShareDTO> addNewShareToPlanning(@Valid @RequestBody ShareDTO shareDTO){
+//        Optional<Users> optUser = userService.getUserById();
+        Optional<Users> optUserToAdd = userService.getUserById(shareDTO.getUserId());
+        Optional<Planning> optPlanning = planningService.getPlanningById(shareDTO.getPlanningId());
+        // Need security : Verify if user has access with his id to this planning
+        if (optUserToAdd.isPresent() && optPlanning.isPresent()) {
+            Optional<Share> optShare = shareService.getShareByPlanningAndUser(optPlanning.get(), optUserToAdd.get());
+            if (optShare.isEmpty()) {
+                Share share = new Share(optPlanning.get(), optUserToAdd.get(), shareDTO.isReadOnly());
+                optPlanning.get().addShare(share);
+                planningService.save(optPlanning.get());
+                return ResponseEntity.status(HttpStatus.OK).body(shareDTO);
+            } else {
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     // Delete existing share
@@ -167,8 +187,23 @@ public class PlanningController {
      * @return PlanningDTO Planning object with all tasks and basic attributes + updated list of share if success
      */
     @DeleteMapping("/planning/share")
-    public ResponseEntity<PlanningDTO> deleteShareFromPlanning(@RequestBody ShareDTO shareDTO) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<PlanningDTO> deleteShareFromPlanning(@Valid @RequestBody ShareDTO shareDTO) {
+        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
+        Optional<Planning> optPlanning = planningService.getPlanningById(shareDTO.getPlanningId());
+        // Need security : Verify if user has access with his id to this planning
+        if (optUser.isPresent() && optPlanning.isPresent()) {
+            Planning planning = optPlanning.get();
+            Users user = optUser.get();
+            Optional<Share> optShare = shareRepository.findByPlanningEqualsAndUsersEquals(planning, user);
+            if (optShare.isPresent()) {
+                shareService.delete(optShare.get());
+                return ResponseEntity.status(HttpStatus.OK).build();
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     /**
@@ -178,8 +213,24 @@ public class PlanningController {
      * @return PlanningDTO Planning object with all tasks and basic attributes + updated list of share if success
      */
     @PutMapping("/planning/update_share")
-    public ResponseEntity<PlanningDTO> updateShareFromPlanning(@RequestBody ShareDTO shareDTO) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<ShareDTO> updateShareFromPlanning(@Valid @RequestBody ShareDTO shareDTO) {
+        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
+        Optional<Planning> optPlanning = planningService.getPlanningById(shareDTO.getPlanningId());
+        // Need security : Verify if user has access with his id to this planning
+        if (optUser.isPresent() && optPlanning.isPresent()) {
+            Planning planning = optPlanning.get();
+            Users user = optUser.get();
+            Optional<Share> optShare = shareRepository.findByPlanningEqualsAndUsersEquals(planning, user);
+            if (optShare.isPresent()) {
+                optShare.get().setIsReadOnly(shareDTO.isReadOnly());
+                shareService.save(optShare.get());
+                return ResponseEntity.status(HttpStatus.OK).body(shareDTO);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
 

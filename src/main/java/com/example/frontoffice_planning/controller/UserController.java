@@ -13,6 +13,7 @@ import com.example.frontoffice_planning.service.AddressService;
 import com.example.frontoffice_planning.service.PlanningService;
 import com.example.frontoffice_planning.service.UserService;
 import com.example.frontoffice_planning.utils.Password_Hasher;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -112,7 +113,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<Users> createUser(@RequestBody UsersDTO usersDTO) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public ResponseEntity<Users> createUser(@Valid @RequestBody UsersDTO usersDTO) throws NoSuchAlgorithmException, InvalidKeySpecException {
         Optional<Users> verifyUser = userRepository.findByEmailEquals(usersDTO.getEmail());
         if (verifyUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();

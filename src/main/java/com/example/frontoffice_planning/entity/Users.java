@@ -208,6 +208,8 @@ public class Users {
         this.share = share;
     }
 
+    public void addShare(Share newShare){this.share.add(newShare);}
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -12,6 +12,7 @@ import com.example.frontoffice_planning.repository.EventRepository;
 import com.example.frontoffice_planning.repository.TaskRepository;
 import com.example.frontoffice_planning.service.PlanningService;
 import com.example.frontoffice_planning.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -90,7 +91,7 @@ public class TaskController {
      * @return taskDTO with ID
      */
     @PostMapping("/task")
-    public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskDTO taskDTO) {
 
         Task newTask = new Task();
 
@@ -140,7 +141,7 @@ public class TaskController {
      * @return taskDTO updated (name, dates, description, new event Update)
      */
     @PutMapping("/task/edit/{id}")
-    public ResponseEntity<TaskDTO> editTask(@RequestBody TaskDTO taskDTO, @PathVariable("id") long id) {
+    public ResponseEntity<TaskDTO> editTask(@Valid @RequestBody TaskDTO taskDTO, @PathVariable("id") long id) {
 
         Optional<Task> optUpdatedTask = taskRepository.findById(id);
         if (optUpdatedTask.isPresent()) {

@@ -23,6 +23,21 @@ public class Share {
     @Column(name = "is_read_only", nullable = false)
     private boolean isReadOnly;
 
+    public Share(){}
+
+    public Share(Planning planning, Users user, boolean isReadOnly){
+        this.planning = planning;
+        this.users = user;
+        this.isReadOnly = isReadOnly;
+    }
+
+    public Share(ShareId id, Planning planning, Users user, boolean isReadOnly){
+        this.id = id;
+        this.planning = planning;
+        this.users = user;
+        this.isReadOnly = isReadOnly;
+    }
+
     public ShareId getId() {
         return id;
     }

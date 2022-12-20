@@ -116,6 +116,10 @@ public class Planning {
         this.share = share;
     }
 
+    public void addShare(Share newShare){this.share.add(newShare);}
+
+    public void removeShare(Share shareToDelete){this.share.remove(shareToDelete);}
+
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
