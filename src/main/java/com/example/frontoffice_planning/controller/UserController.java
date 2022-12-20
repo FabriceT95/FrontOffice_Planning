@@ -142,4 +142,19 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(newUser);
     }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<Users> updateUser(@Valid @RequestBody UsersDTO usersDTO, @PathVariable("id") long id){
+        Optional<Users> verifyUser = userRepository.findByEmailEquals(usersDTO.getEmail());
+        if (verifyUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Users user = verifyUser.get();
+        user.setPseudo(usersDTO.getPseudo());
+        user.setPhoto(usersDTO.getPhoto());
+        // TODO : password
+        userService.createUser(user);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
 }
