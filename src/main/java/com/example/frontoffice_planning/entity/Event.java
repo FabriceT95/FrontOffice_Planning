@@ -28,8 +28,8 @@ public class Event {
     private Planning planning;
 
     @ManyToOne
-    @JoinColumn(name = "id_event", referencedColumnName = "id_event", nullable = false)
-    private Users user;
+    @JoinColumn(name = "id_user", referencedColumnName = "id_user", nullable = false)
+    private Users users;
 
     public Event(LocalDateTime dateCreated, Action action) {
         this.dateCreated = dateCreated;
@@ -101,10 +101,10 @@ public class Event {
     }
 
     public Users getUser() {
-        return user;
+        return users;
     }
 
     public void setUser(Users user) {
-        this.user = user;
+        this.users = user;
     }
 }

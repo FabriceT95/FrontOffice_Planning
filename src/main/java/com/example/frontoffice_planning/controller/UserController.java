@@ -63,7 +63,7 @@ public class UserController {
             usersDTO.setEmail(userEntity.getEmail());
             //   usersDTO.setPassword(userEntity.getPassword());
             usersDTO.setPhoto(userEntity.getPhoto());
-            usersDTO.setAddressDTO(new AddressDTO(userEntity.getAddress().getCity(), userEntity.getAddress().getPostalCode()));
+            usersDTO.setAddressDTO(new AddressDTO(userEntity.getAddress().getIdAddress(),  userEntity.getAddress().getCity(), userEntity.getAddress().getPostalCode()));
             usersDTO.setPlanningId(userEntity.getPlanning().getIdPlanning());
             usersDTO.setSharedPlanningId(userEntity.getShare().stream().map(share -> share.getPlanning().getIdPlanning()).collect(Collectors.toList()));
             return ResponseEntity.status(HttpStatus.OK).body(usersDTO);
@@ -94,7 +94,7 @@ public class UserController {
 
     @GetMapping("/users/email/{email}")
     public ResponseEntity<UsersDTO> getUserByEmail(@PathVariable("email") String email) {
-        Optional<Users> user = userRepository.findByEmailEquals(email);
+        Optional<Users> user = userRepository.findByEmail(email);
 
         if (user.isPresent()) {
             Users userEntity = user.get();
@@ -114,7 +114,7 @@ public class UserController {
 
     @PostMapping("/users")
     public ResponseEntity<Users> createUser(@Valid @RequestBody UsersDTO usersDTO) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        Optional<Users> verifyUser = userRepository.findByEmailEquals(usersDTO.getEmail());
+        Optional<Users> verifyUser = userRepository.findByEmail(usersDTO.getEmail());
         if (verifyUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
@@ -144,8 +144,8 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<Users> updateUser(@Valid @RequestBody UsersDTO usersDTO, @PathVariable("id") long id){
-        Optional<Users> verifyUser = userRepository.findByEmailEquals(usersDTO.getEmail());
+    public ResponseEntity<UsersDTO> updateUser(@Valid @RequestBody UsersDTO usersDTO, @PathVariable("id") long id){
+        Optional<Users> verifyUser = userRepository.findByEmail(usersDTO.getEmail());
         if (verifyUser.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -154,7 +154,7 @@ public class UserController {
         user.setPhoto(usersDTO.getPhoto());
         // TODO : password
         userService.createUser(user);
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        return ResponseEntity.status(HttpStatus.OK).body(usersDTO);
     }
 
 }

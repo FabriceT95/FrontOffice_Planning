@@ -10,6 +10,12 @@ public class AddressDTO {
     public AddressDTO() {
     }
 
+    public AddressDTO(Long idAddress, String city, String postalCode) {
+        this.idAddress = idAddress;
+        this.city = city;
+        this.postalCode = postalCode;
+    }
+
     public AddressDTO(String city, String postalCode) {
         this.city = city;
         this.postalCode = postalCode;
