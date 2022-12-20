@@ -8,7 +8,7 @@ public class PlanningDTO {
 
     private long idPlanning;
 
-    private long idOwner;
+    private UsersDTO usersDTO;
 
     private String namePlanning;
 
@@ -31,12 +31,12 @@ public class PlanningDTO {
         this.idPlanning = idPlanning;
     }
 
-    public long getIdOwner() {
-        return idOwner;
+    public UsersDTO getUsersDTO() {
+        return usersDTO;
     }
 
-    public void setIdOwner(long idOwner) {
-        this.idOwner = idOwner;
+    public void setUsersDTO(UsersDTO usersDTO) {
+        this.usersDTO = usersDTO;
     }
 
     public String getNamePlanning() {

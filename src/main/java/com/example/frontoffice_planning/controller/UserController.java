@@ -71,7 +71,6 @@ public class UserController {
 
     }
 
-    // Not needed
     @GetMapping("/users/name/{name}")
     public ResponseEntity<UsersDTO> getUserByName(@PathVariable("name") String name) {
         Optional<Users> user = userRepository.findByPseudoEquals(name);
@@ -92,7 +91,6 @@ public class UserController {
 
     }
 
-    // Not needed
     @GetMapping("/users/email/{email}")
     public ResponseEntity<UsersDTO> getUserByEmail(@PathVariable("email") String email) {
         Optional<Users> user = userRepository.findByEmailEquals(email);

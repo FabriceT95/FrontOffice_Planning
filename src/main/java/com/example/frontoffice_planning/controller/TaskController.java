@@ -41,6 +41,13 @@ public class TaskController {
         this.eventRepository = eventRepository;
     }
 
+    /**
+     * Find a task based on ID
+     *
+     * @param idTask
+     * @return taskDTO Formatted Task object for Front-End
+     */
+
     @GetMapping("/task/id/{id}")
     public ResponseEntity<TaskDTO> getTaskById(@PathVariable("id") long idTask) {
 
@@ -76,6 +83,12 @@ public class TaskController {
     }
 
     // Always need to check if it's owner or shared
+
+    /**
+     * Create a Task from DTO
+     * @param taskDTO
+     * @return taskDTO with ID
+     */
     @PostMapping("/task")
     public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) {
 
@@ -100,8 +113,14 @@ public class TaskController {
 
     // If we definitly delete, action "Delete" in table is useless
     // Maybe not delete, but set as delete but table will grow . Just keeping task as delete for logging.
+
+    /**
+     * Delete a Task based on ID
+     * @param id
+     * @return HttpStatus success or not found
+     */
     @DeleteMapping("/task/delete/{id}")
-    public ResponseEntity<Task> deleteTask(@PathVariable("id") long id) {
+    public ResponseEntity<HttpStatus> deleteTask(@PathVariable("id") long id) {
 
         Optional<Task> deleteTask = taskRepository.findById(id);
 
@@ -114,6 +133,12 @@ public class TaskController {
 
     }
 
+    /**
+     * Edit a Task with a DTO
+     * @param taskDTO
+     * @param id Task Id
+     * @return taskDTO updated (name, dates, description, new event Update)
+     */
     @PutMapping("/task/edit/{id}")
     public ResponseEntity<TaskDTO> editTask(@RequestBody TaskDTO taskDTO, @PathVariable("id") long id) {
 

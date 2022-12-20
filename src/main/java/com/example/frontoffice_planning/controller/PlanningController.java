@@ -4,6 +4,7 @@ package com.example.frontoffice_planning.controller;
 import com.example.frontoffice_planning.controller.models.PlanningDTO;
 import com.example.frontoffice_planning.controller.models.ShareDTO;
 import com.example.frontoffice_planning.controller.models.TaskDTO;
+import com.example.frontoffice_planning.controller.models.UsersDTO;
 import com.example.frontoffice_planning.entity.Planning;
 import com.example.frontoffice_planning.entity.Share;
 import com.example.frontoffice_planning.entity.Task;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class PlanningController {
 
     private final UserService userService;
+
     private final PlanningService planningService;
 
     private final ShareService shareService;
@@ -38,6 +40,13 @@ public class PlanningController {
     // Maybe allowing the owner to get by this path aswell ?
     // For now, only shared people can go this way, not the owner
     // Owner only gets it from "UserControlle" API
+
+    /**
+     * Get a planning shared by a user. ShareDTO validates the share
+     * Validation needs to be proven again for security purpose
+     * @param shareDTO key object attesting sharing
+     * @return PlanningDTO Planning object with all tasks and basic attributes
+     */
     @GetMapping("/planning/auth")
     public ResponseEntity<PlanningDTO> getPlanningByShare(@RequestBody ShareDTO shareDTO) {
         Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
@@ -51,7 +60,15 @@ public class PlanningController {
                 planningDTO.setIdPlanning(planning.getIdPlanning());
                 planningDTO.setNamePlanning(planning.getNamePlanning());
                 planningDTO.setDateCreated(planning.getDateCreated());
-                planningDTO.setIdOwner(planning.getUser().getIdUser());
+
+                // We can retrieve everything but we don't need all here. Just few data for display purpose.
+                UsersDTO usersDTO = new UsersDTO();
+                usersDTO.setPlanningId(planningDTO.getIdPlanning());
+                usersDTO.setIdUser(planning.getUser().getIdUser());
+                usersDTO.setPhoto(planning.getUser().getPhoto());
+                usersDTO.setPseudo(planning.getUser().getPseudo());
+
+                planningDTO.setUsersDTO(usersDTO);
                 planningDTO.setReadOnly(optShare.get().getIsReadOnly());
 
                 List<Task> taskList = planning.getTasks();
@@ -82,6 +99,13 @@ public class PlanningController {
     // We can do 2 request : One specified for the owner, and other one for any shared people
     // Or just one mixing both
     // PARAMS IN PROGRESS
+
+    /**
+     * Update the planning itself. Only affects its name, only this field is editable
+     * @param name New string value given to the planning
+     * @param shareDTO key object attesting sharing
+     * @return PlanningDTO Planning object with all tasks and basic attributes
+     */
     @PutMapping("/planning/auth?name={name}")
     public ResponseEntity<PlanningDTO> updatePlanningName(@PathVariable("name") String name, @RequestBody ShareDTO shareDTO) {
         Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
@@ -97,8 +121,15 @@ public class PlanningController {
                 planningDTO.setIdPlanning(planning.getIdPlanning());
                 planningDTO.setNamePlanning(planning.getNamePlanning());
                 planningDTO.setDateCreated(planning.getDateCreated());
-                planningDTO.setIdOwner(planning.getUser().getIdUser());
                 planningDTO.setReadOnly(optShare.get().getIsReadOnly());
+
+                UsersDTO usersDTO = new UsersDTO();
+                usersDTO.setPlanningId(planningDTO.getIdPlanning());
+                usersDTO.setIdUser(planning.getUser().getIdUser());
+                usersDTO.setPhoto(planning.getUser().getPhoto());
+                usersDTO.setPseudo(planning.getUser().getPseudo());
+
+                planningDTO.setUsersDTO(usersDTO);
 
                 return ResponseEntity.status(HttpStatus.OK).body(planningDTO);
             } else {
@@ -111,6 +142,14 @@ public class PlanningController {
 
     // Create a new share
     // Verify if this request comes from the owner
+    // Returns a status or a PlanningDTO ? => We can add manually from front-end if success
+
+    /**
+     * Allows the owner to add a new user to his planning.
+     * ShareDTO manages the readOnly value (can be set on update)
+     * @param shareDTO key object attesting sharing
+     * @return PlanningDTO Planning object with all tasks and basic attributes + updated list of share if success
+     */
     @PutMapping("/planning/new_share")
     public ResponseEntity<PlanningDTO> addNewShareToPlanning(@RequestBody ShareDTO shareDTO) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -119,8 +158,27 @@ public class PlanningController {
     // Delete existing share
     // Verify if this request comes from the owner
     //// MAYBE CREATE A CONTROLLER FOR SHARE ??
-    @DeleteMapping("/planning/new_share")
+    // Returns a status or a PlanningDTO ? => We can remove manually from front-end if success
+
+    /**
+     * Allows the owner to delete user from his planning.
+     * With ShareDTO as body, we get the planning id and the user share-with id
+     * @param shareDTO key object attesting sharing
+     * @return PlanningDTO Planning object with all tasks and basic attributes + updated list of share if success
+     */
+    @DeleteMapping("/planning/share")
     public ResponseEntity<PlanningDTO> deleteShareFromPlanning(@RequestBody ShareDTO shareDTO) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    /**
+     * Allows the owner to update an existing share from his planning.
+     * readOnly boolean will be set => true = read only, false = all
+     * @param shareDTO key object attesting sharing
+     * @return PlanningDTO Planning object with all tasks and basic attributes + updated list of share if success
+     */
+    @PutMapping("/planning/update_share")
+    public ResponseEntity<PlanningDTO> updateShareFromPlanning(@RequestBody ShareDTO shareDTO) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 

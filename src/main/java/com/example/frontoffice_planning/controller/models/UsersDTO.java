@@ -2,6 +2,7 @@ package com.example.frontoffice_planning.controller.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,10 @@ public class UsersDTO {
     private String password;
 
     private String photo;
+
+    private LocalDateTime dateLastLogin;
+
+    private List<RoleDTO> roleDTOList = new ArrayList<>();
 
     private AddressDTO addressDTO;
 
@@ -74,6 +79,7 @@ public class UsersDTO {
     public void setAddressDTO(AddressDTO addressDTO) {
         this.addressDTO = addressDTO;
     }
+
     public Long getPlanningId() {
         return planningId;
     }
@@ -89,4 +95,25 @@ public class UsersDTO {
     public void setSharedPlanningId(List<Long> sharedPlanningId) {
         this.sharedPlanningId = sharedPlanningId;
     }
+
+    public LocalDateTime getDateLastLogin() {
+        return dateLastLogin;
+    }
+
+    public void setDateLastLogin(LocalDateTime dateLastLogin) {
+        this.dateLastLogin = dateLastLogin;
+    }
+
+    public List<RoleDTO> getRoleDTOList() {
+        return roleDTOList;
+    }
+
+    public void setRoleDTOList(List<RoleDTO> roleDTOList) {
+        this.roleDTOList = roleDTOList;
+    }
+
+    public void addRoleDTO(RoleDTO roleDTO) {
+        this.roleDTOList.add(roleDTO);
+    }
+
 }
