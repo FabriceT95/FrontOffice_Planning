@@ -1,5 +1,9 @@
 package com.example.frontoffice_planning.controller.models;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +12,14 @@ public class PlanningDTO {
 
     private long idPlanning;
 
+    @NotEmpty
     private UsersDTO usersDTO;
 
+    @NotEmpty
+    @Size(min = 3, message = "planning name should have at least 3 characters")
     private String namePlanning;
 
+    @DateTimeFormat
     private LocalDateTime dateCreated;
 
     private boolean isReadOnly;

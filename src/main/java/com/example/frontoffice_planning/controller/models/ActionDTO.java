@@ -1,8 +1,11 @@
 package com.example.frontoffice_planning.controller.models;
 
+import jakarta.validation.constraints.NotEmpty;
+
 public class ActionDTO {
     private Long idAction;
 
+    @NotEmpty
     private String name;
 
     public ActionDTO() {

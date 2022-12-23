@@ -1,11 +1,16 @@
 package com.example.frontoffice_planning.controller.models;
 
+import jakarta.validation.constraints.NotEmpty;
+
 public class ShareDTO {
 
+    @NotEmpty
     private Long planningId;
 
-    private Long userId;
+    @NotEmpty
+    private String email;
 
+    @NotEmpty
     private boolean isReadOnly;
 
     public ShareDTO() {
@@ -19,12 +24,12 @@ public class ShareDTO {
         this.planningId = planningId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public boolean isReadOnly() {

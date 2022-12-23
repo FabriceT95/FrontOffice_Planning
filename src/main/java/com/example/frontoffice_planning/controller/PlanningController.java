@@ -93,7 +93,7 @@ public class PlanningController {
      */
     @GetMapping("/planning/auth")
     public ResponseEntity<PlanningDTO> getPlanningByShare(@Valid @RequestBody ShareDTO shareDTO) {
-        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
+        Optional<Users> optUser = userService.getUserByEmail(shareDTO.getEmail());
         Optional<Planning> optPlanning = planningService.getPlanningById(shareDTO.getPlanningId());
         // Need security : Verify if user has access with his id to this planning
         if (optUser.isPresent() && optPlanning.isPresent()) {
@@ -151,7 +151,7 @@ public class PlanningController {
      */
     @PutMapping("/planning")
     public ResponseEntity<PlanningDTO> updatePlanningName(@RequestParam String name, @Valid @RequestBody ShareDTO shareDTO) {
-        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
+        Optional<Users> optUser = userService.getUserByEmail(shareDTO.getEmail());
         Optional<Planning> optPlanning = planningService.getPlanningById(shareDTO.getPlanningId());
         // Need security : Verify if user has access with his id to this planning
         // Or  Is planning owner
@@ -196,7 +196,7 @@ public class PlanningController {
     @PostMapping("/planning/share")
     public ResponseEntity<ShareDTO> addNewShareToPlanning(@Valid @RequestBody ShareDTO shareDTO) {
 //        Optional<Users> optUser = userService.getUserById();
-        Optional<Users> optUserToAdd = userService.getUserById(shareDTO.getUserId());
+        Optional<Users> optUserToAdd = userService.getUserByEmail(shareDTO.getEmail());
         Optional<Planning> optPlanning = planningService.getPlanningById(shareDTO.getPlanningId());
         // Need security : Verify if user has access with his id to this planning
         if (optUserToAdd.isPresent() && optPlanning.isPresent()) {
@@ -227,7 +227,7 @@ public class PlanningController {
      */
     @DeleteMapping("/planning/share")
     public ResponseEntity<PlanningDTO> deleteShareFromPlanning(@Valid @RequestBody ShareDTO shareDTO) {
-        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
+        Optional<Users> optUser = userService.getUserByEmail(shareDTO.getEmail());
         Optional<Planning> optPlanning = planningService.getPlanningById(shareDTO.getPlanningId());
         // Need security : Verify if user has access with his id to this planning
         if (optUser.isPresent() && optPlanning.isPresent()) {
@@ -253,7 +253,7 @@ public class PlanningController {
      */
     @PutMapping("/planning/share")
     public ResponseEntity<ShareDTO> updateShareFromPlanning(@Valid @RequestBody ShareDTO shareDTO) {
-        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
+        Optional<Users> optUser = userService.getUserByEmail(shareDTO.getEmail());
         Optional<Planning> optPlanning = planningService.getPlanningById(shareDTO.getPlanningId());
         // Need security : Verify if user has access with his id to this planning
         if (optUser.isPresent() && optPlanning.isPresent()) {
@@ -280,7 +280,7 @@ public class PlanningController {
      */
     @GetMapping("/planning/events/{planning_id}")
     public ResponseEntity<List<EventDTO>> getEventsByPlanning(@Valid @RequestBody ShareDTO shareDTO, @PathVariable("planning_id") long id) {
-        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
+        Optional<Users> optUser = userService.getUserByEmail(shareDTO.getEmail());
         Optional<Planning> optPlanning = planningService.getPlanningById(id);
         // Or is Owner
         if (optUser.isPresent() && optPlanning.isPresent()) {
@@ -319,7 +319,7 @@ public class PlanningController {
      */
     @GetMapping("/planning/events")
     public ResponseEntity<List<EventDTO>> getEventsFromSharedAndOwnerPlanning(@Valid @RequestBody ShareDTO shareDTO) {
-        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
+        Optional<Users> optUser = userService.getUserByEmail(shareDTO.getEmail());
         // Or is Owner
         if (optUser.isPresent()) {
             Users user = optUser.get();

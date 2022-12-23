@@ -1,5 +1,10 @@
 package com.example.frontoffice_planning.controller.models;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,18 +16,28 @@ public class UsersDTO {
 
     private Long idUser;
 
+    @NotEmpty
+    @Size(min = 3, message = "user name should have at least 3 characters")
     private String pseudo;
 
+    @NotEmpty
+    @Email
     private String email;
 
+    @NotEmpty
+    @Size(min = 8, message = "password should have at least 8 characters")
     private String password;
+
 
     private String photo;
 
+    @DateTimeFormat
     private LocalDateTime dateLastLogin;
+
 
     private List<RoleDTO> roleDTOList = new ArrayList<>();
 
+    @NotEmpty
     private AddressDTO addressDTO;
 
     private Long planningId;

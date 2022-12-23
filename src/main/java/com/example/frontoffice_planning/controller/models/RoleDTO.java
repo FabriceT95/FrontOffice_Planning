@@ -1,9 +1,12 @@
 package com.example.frontoffice_planning.controller.models;
 
+import jakarta.validation.constraints.NotEmpty;
+
 public class RoleDTO {
 
     private Long idRole;
 
+    @NotEmpty
     private String name;
 
     public RoleDTO() {

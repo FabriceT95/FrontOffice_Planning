@@ -1,5 +1,10 @@
 package com.example.frontoffice_planning.controller.models;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,14 +12,24 @@ import java.util.List;
 public class TaskDTO {
     private Long idTask;
 
+    @NotEmpty
     private Long idPlanning;
 
+    @NotEmpty
+    @Size(min = 3, message = "user name should have at least 3 characters")
     private String nameTask;
 
+
+    @DateTimeFormat
     private LocalDateTime dateCreated;
+
+    @NotEmpty
+    @DateTimeFormat
 
     private LocalDateTime dateTaskStart;
 
+    @NotEmpty
+    @DateTimeFormat
     private LocalDateTime dateTaskEnd;
 
     private String description;
