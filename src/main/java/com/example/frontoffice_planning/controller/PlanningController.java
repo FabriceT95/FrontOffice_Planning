@@ -110,7 +110,7 @@ public class PlanningController {
                 usersDTO.setPlanningId(planningDTO.getIdPlanning());
                 usersDTO.setIdUser(planning.getUser().getIdUser());
                 usersDTO.setPhoto(planning.getUser().getPhoto());
-                usersDTO.setPseudo(planning.getUser().getPseudo());
+                usersDTO.setUsername(planning.getUser().getUsername());
 
                 planningDTO.setUsersDTO(usersDTO);
                 planningDTO.setReadOnly(optShare.get().getIsReadOnly());
@@ -171,7 +171,7 @@ public class PlanningController {
                 usersDTO.setPlanningId(planningDTO.getIdPlanning());
                 usersDTO.setIdUser(planning.getUser().getIdUser());
                 usersDTO.setPhoto(planning.getUser().getPhoto());
-                usersDTO.setPseudo(planning.getUser().getPseudo());
+                usersDTO.setUsername(planning.getUser().getUsername());
 
                 planningDTO.setUsersDTO(usersDTO);
 
@@ -299,7 +299,7 @@ public class PlanningController {
                     eventDTO.setActionDTO(actionDTO);
                     eventDTO.setIdPlanning(planning.getIdPlanning());
                     eventDTO.setDateCreated(event.getDateCreated());
-                    eventDTO.setUsername(event.getUser().getPseudo());
+                    eventDTO.setUsername(event.getUser().getUsername());
                     eventDTO.setPlanningName(event.getPlanning().getNamePlanning());
                     return eventDTO;
                 }).toList();
@@ -342,7 +342,7 @@ public class PlanningController {
                 eventDTO.setActionDTO(actionDTO);
                 eventDTO.setIdPlanning(event.getPlanning().getIdPlanning());
                 eventDTO.setDateCreated(event.getDateCreated());
-                eventDTO.setUsername(event.getUser().getPseudo());
+                eventDTO.setUsername(event.getUser().getUsername());
                 eventDTO.setPlanningName(event.getPlanning().getNamePlanning());
                 return eventDTO;
             }).toList();

@@ -1,13 +1,17 @@
 package com.example.frontoffice_planning.entity;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
-@Entity(name="Users")
+@Entity(name = "Users")
 @Table(name = "users")
-public class Users {
+public class Users implements UserDetails {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -15,8 +19,8 @@ public class Users {
     private Long idUser;
 
     @Basic
-    @Column(name = "pseudo", nullable = false)
-    private String pseudo;
+    @Column(name = "username", nullable = false)
+    private String username;
 
     @Basic
     @Column(name = "email", nullable = false)
@@ -24,7 +28,7 @@ public class Users {
 
     @Basic
     @Column(name = "password", nullable = false)
-    private byte[] password;
+    private String password;
 
     @Basic
     @Column(name = "photo")
@@ -35,13 +39,13 @@ public class Users {
     private LocalDateTime dateLastLogin;
 
     @Basic
-    @Column(name="is_activated", nullable = false)
+    @Column(name = "is_activated", nullable = false)
     private boolean isActivated;
 
     @ManyToMany(cascade = {CascadeType.PERSIST}/*, fetch = FetchType.EAGER*/)
-    @JoinTable(name="users_roles",
-    joinColumns = @JoinColumn(name="id_user"),
-    inverseJoinColumns = @JoinColumn(name = "id_role"))
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_role"))
     private Set<Role> roles = new HashSet<>();
 
     @ManyToOne(cascade = CascadeType.PERSIST)
@@ -65,9 +69,9 @@ public class Users {
         this.email = email;
     }
 
-    public Users(Long idUser, String pseudo, String email, byte[] password, String photo, LocalDateTime dateLastLogin, Address address, Planning planning) {
+    public Users(Long idUser, String username, String email, String password, String photo, LocalDateTime dateLastLogin, Address address, Planning planning) {
         this.idUser = idUser;
-        this.pseudo = pseudo;
+        this.username = username;
         this.email = email;
         this.password = password;
         this.photo = photo;
@@ -77,9 +81,9 @@ public class Users {
     }
 
 
-    public Users(Long idUser, String pseudo, String email, byte[] password, String photo, Address address, Planning planning) {
+    public Users(Long idUser, String username, String email, String password, String photo, Address address, Planning planning) {
         this.idUser = idUser;
-        this.pseudo = pseudo;
+        this.username = username;
         this.email = email;
         this.password = password;
         this.photo = photo;
@@ -87,8 +91,8 @@ public class Users {
         this.planning = planning;
     }
 
-    public Users(String pseudo, String email, byte[] password, String photo,  Address address, Planning planning) {
-        this.pseudo = pseudo;
+    public Users(String username, String email, String password, String photo, Address address, Planning planning) {
+        this.username = username;
         this.email = email;
         this.password = password;
         this.photo = photo;
@@ -96,15 +100,15 @@ public class Users {
         this.planning = planning;
     }
 
-    public Users(Long idUser, String pseudo, String email, LocalDateTime dateLastLogin){
+    public Users(Long idUser, String username, String email, LocalDateTime dateLastLogin) {
         this.idUser = idUser;
-        this.pseudo = pseudo;
+        this.username = username;
         this.email = email;
         this.dateLastLogin = dateLastLogin;
     }
 
-    public Users(String pseudo, String email, byte[] password) {
-        this.pseudo = pseudo;
+    public Users(String username, String email, String password) {
+        this.username = username;
         this.email = email;
         this.password = password;
     }
@@ -117,8 +121,8 @@ public class Users {
         this.roles.add(role);
     }
 
-    public void deleteRole(Role role){
-        if (this.getRoles().contains(role)){
+    public void deleteRole(Role role) {
+        if (this.getRoles().contains(role)) {
             this.roles.remove(role);
         }
     }
@@ -151,12 +155,13 @@ public class Users {
         this.idUser = idUser;
     }
 
-    public String getPseudo() {
-        return pseudo;
+    @Override
+    public String getUsername() {
+        return username;
     }
 
-    public void setPseudo(String pseudo) {
-        this.pseudo = pseudo;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -167,11 +172,40 @@ public class Users {
         this.email = email;
     }
 
-    public byte[] getPassword() {
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles
+                .stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
+    }
+
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(byte[] password) {
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.roles.stream().anyMatch(role -> Objects.equals(role.getName(), "BASIC"));
+    }
+
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -208,7 +242,9 @@ public class Users {
         this.share = share;
     }
 
-    public void addShare(Share newShare){this.share.add(newShare);}
+    public void addShare(Share newShare) {
+        this.share.add(newShare);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -218,9 +254,9 @@ public class Users {
         Users users = (Users) o;
 
         if (!Objects.equals(idUser, users.idUser)) return false;
-        if (!Objects.equals(pseudo, users.pseudo)) return false;
+        if (!Objects.equals(username, users.username)) return false;
         if (!Objects.equals(email, users.email)) return false;
-        if (password != null ? !Arrays.equals(password, users.password) : users.password != null) return false;
+        if (!Objects.equals(password, users.password)) return false;
         if (!Objects.equals(photo, users.photo)) return false;
         if (!Objects.equals(dateLastLogin, users.dateLastLogin))
             return false;
@@ -236,16 +272,16 @@ public class Users {
         this.events = events;
     }
 
-    public void addEvent(Event event){
+    public void addEvent(Event event) {
         this.events.add(event);
     }
 
     @Override
     public int hashCode() {
         int result = idUser.intValue();
-        result = 31 * result + (pseudo != null ? pseudo.hashCode() : 0);
+        result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (password != null ? Arrays.hashCode(password) : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (photo != null ? photo.hashCode() : 0);
         result = 31 * result + (dateLastLogin != null ? dateLastLogin.hashCode() : 0);
         return result;
@@ -255,9 +291,9 @@ public class Users {
     public String toString() {
         return "Users{" +
                 "idUser=" + idUser +
-                ", pseudo='" + pseudo + '\'' +
+                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", password=" + Arrays.toString(password) +
+                ", password=" + password +
                 ", photo='" + photo + '\'' +
                 ", dateLastLogin=" + dateLastLogin +
                 ", isActivated=" + isActivated +

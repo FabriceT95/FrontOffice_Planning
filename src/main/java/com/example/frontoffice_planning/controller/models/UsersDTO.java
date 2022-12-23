@@ -18,9 +18,8 @@ public class UsersDTO {
 
     @NotEmpty
     @Size(min = 3, message = "user name should have at least 3 characters")
-    private String pseudo;
+    private String username;
 
-    @NotEmpty
     @Email
     private String email;
 
@@ -37,7 +36,6 @@ public class UsersDTO {
 
     private List<RoleDTO> roleDTOList = new ArrayList<>();
 
-    @NotEmpty
     private AddressDTO addressDTO;
 
     private Long planningId;
@@ -53,12 +51,12 @@ public class UsersDTO {
         this.idUser = idUser;
     }
 
-    public String getPseudo() {
-        return pseudo;
+    public String getUsername() {
+        return username;
     }
 
-    public void setPseudo(String pseudo) {
-        this.pseudo = pseudo;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
