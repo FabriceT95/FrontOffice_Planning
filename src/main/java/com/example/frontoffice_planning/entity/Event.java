@@ -20,7 +20,7 @@ public class Event {
     private Action action;
 
     @ManyToOne
-    @JoinColumn(name="id_task", referencedColumnName = "id_task", nullable = false)
+    @JoinColumn(name="id_task", referencedColumnName = "id_task", nullable = true)
     private Task task;
 
     @ManyToOne

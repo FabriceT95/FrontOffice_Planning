@@ -1,7 +1,5 @@
 package com.example.frontoffice_planning.controller.models;
 
-import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

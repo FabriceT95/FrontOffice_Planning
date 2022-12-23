@@ -7,6 +7,10 @@ public class EventDTO {
 
     private Long idPlanning;
 
+    private String username;
+
+    private String planningName;
+
     private LocalDateTime dateCreated;
 
 
@@ -47,5 +51,21 @@ public class EventDTO {
 
     public void setActionDTO(ActionDTO actionDTO) {
         this.actionDTO = actionDTO;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPlanningName() {
+        return planningName;
+    }
+
+    public void setPlanningName(String planningName) {
+        this.planningName = planningName;
     }
 }

@@ -12,6 +12,7 @@ import com.example.frontoffice_planning.repository.EventRepository;
 import com.example.frontoffice_planning.repository.TaskRepository;
 import com.example.frontoffice_planning.service.PlanningService;
 import com.example.frontoffice_planning.service.TaskService;
+import com.example.frontoffice_planning.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,17 +30,20 @@ public class TaskController {
     private final TaskRepository taskRepository;
     private final ActionRepository actionRepository;
 
+    private final UserService userService;
+
     private final EventRepository eventRepository;
     private final TaskService taskService;
 
     private final PlanningService planningService;
 
-    public TaskController(TaskRepository taskRepository, ActionRepository actionRepository, TaskService taskService, PlanningService planningService, EventRepository eventRepository) {
+    public TaskController(TaskRepository taskRepository, ActionRepository actionRepository, TaskService taskService, PlanningService planningService, EventRepository eventRepository, UserService userService) {
         this.taskRepository = taskRepository;
         this.actionRepository = actionRepository;
         this.taskService = taskService;
         this.planningService = planningService;
         this.eventRepository = eventRepository;
+        this.userService = userService;
     }
 
     /**
@@ -49,7 +53,7 @@ public class TaskController {
      * @return taskDTO Formatted Task object for Front-End
      */
 
-    @GetMapping("/task/id/{id}")
+    @GetMapping("/task/{id}")
     public ResponseEntity<TaskDTO> getTaskById(@PathVariable("id") long idTask) {
 
         Optional<Task> seachedTask = taskRepository.findById(idTask);
@@ -59,6 +63,7 @@ public class TaskController {
 
             TaskDTO taskDTO = new TaskDTO();
             taskDTO.setIdTask(task.getIdTask());
+            taskDTO.setIdPlanning(task.getPlanningByIdPlanning().getIdPlanning());
             taskDTO.setNameTask(task.getNameTask());
             taskDTO.setDescription(task.getDescription());
             taskDTO.setDateCreated(task.getDateCreated());
@@ -87,11 +92,12 @@ public class TaskController {
 
     /**
      * Create a Task from DTO
+     *
      * @param taskDTO
      * @return taskDTO with ID
      */
     @PostMapping("/task")
-    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) {
 
         Task newTask = new Task();
 
@@ -101,13 +107,29 @@ public class TaskController {
         newTask.setDateTaskEnd(taskDTO.getDateTaskEnd());
         newTask.setDateCreated(LocalDateTime.now());
         newTask.setPlanning(planningService.getPlanningById(taskDTO.getIdPlanning()).get());
-        newTask.addEvent(new Event(LocalDateTime.now(), actionRepository.findById(1L).get()));
+        Event event = new Event(LocalDateTime.now(), actionRepository.findById(1L).get());
+        event.setPlanning(planningService.getPlanningById(taskDTO.getIdPlanning()).get());
+        event.setUser(userService.getUserById(1L).get());
+        newTask.addEvent(event);
+
 
         Task createdTask = taskService.createTask(newTask);
+        event.setTask(createdTask);
+        eventRepository.save(event);
 
         taskDTO.setDateCreated(createdTask.getDateCreated());
         taskDTO.setIdTask(createdTask.getIdTask());
-
+        taskDTO.setEventList(newTask.getEventsByIdTask().stream().map(e -> {
+            EventDTO eventDTO = new EventDTO();
+            eventDTO.setIdPlanning(e.getPlanning().getIdPlanning());
+            eventDTO.setDateCreated(e.getDateCreated());
+            ActionDTO actionDTO = new ActionDTO();
+            actionDTO.setIdAction(e.getAction().getIdAction());
+            actionDTO.setName(e.getAction().getName());
+            eventDTO.setActionDTO(actionDTO);
+            eventDTO.setIdEvent(e.getIdEvent());
+            return eventDTO;
+        }).collect(Collectors.toList()));
         return ResponseEntity.status(HttpStatus.OK).body(taskDTO);
     }
 
@@ -117,6 +139,7 @@ public class TaskController {
 
     /**
      * Delete a Task based on ID
+     *
      * @param id
      * @return HttpStatus success or not found
      */
@@ -136,8 +159,9 @@ public class TaskController {
 
     /**
      * Edit a Task with a DTO
+     *
      * @param taskDTO
-     * @param id Task Id
+     * @param id      Task Id
      * @return taskDTO updated (name, dates, description, new event Update)
      */
     @PutMapping("/task/edit/{id}")
