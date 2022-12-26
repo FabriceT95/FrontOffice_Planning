@@ -1,16 +1,17 @@
 package com.example.frontoffice_planning.controller.models;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 public class ShareDTO {
 
-    @NotEmpty
+    @NotNull(message = "Share DTO must have a planningId")
     private Long planningId;
 
-    @NotEmpty
+    @NotNull(message = "Share DTO must have an email")
     private String email;
 
-    @NotEmpty
+    @NotNull(message = "Share DTO must have a boolean isReadOnly")
     private boolean isReadOnly;
 
     public ShareDTO() {

@@ -1,6 +1,7 @@
 package com.example.frontoffice_planning.controller.models;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -10,17 +11,17 @@ public class EventDTO {
 
     private Long idPlanning;
 
-    @NotEmpty
+    @NotNull(message = "EventDTO must have a username (creator's one)")
     private String username;
 
-    @NotEmpty
+    @NotNull(message = "EventDTO must have a planning name")
     private String planningName;
 
     @DateTimeFormat
     private LocalDateTime dateCreated;
 
 
-    @NotEmpty
+    @NotNull(message = "EventDTO must be associated with an ActionDTO")
     private ActionDTO actionDTO;
 
 

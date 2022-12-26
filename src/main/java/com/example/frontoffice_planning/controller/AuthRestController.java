@@ -33,6 +33,12 @@ public class AuthRestController {
     @Autowired
     private JwtUtils jwtUtils;
 
+    /**
+     * Basic signup. Creates a User based on SignupRequest
+     *
+     * @param signupRequest SignupRequest object with all data needed to create a new User
+     * @return HttpStatus 201
+     */
     @PostMapping("/signup")
     public ResponseEntity<HttpStatus> signup(@RequestBody SignupRequest signupRequest) {
         try {
@@ -43,6 +49,12 @@ public class AuthRestController {
         }
     }
 
+    /**
+     * Basic signin. User logs in and retrives a JWT for all interactions on this API
+     *
+     * @param signinRequest SigninRequest object with Email and Password
+     * @return JwtResponse object with Users email and token
+     */
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody SigninRequest signinRequest) {

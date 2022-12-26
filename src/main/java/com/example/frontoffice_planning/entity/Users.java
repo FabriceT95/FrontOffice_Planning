@@ -42,7 +42,7 @@ public class Users implements UserDetails {
     @Column(name = "is_activated", nullable = false)
     private boolean isActivated;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST}/*, fetch = FetchType.EAGER*/)
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "id_user"),
             inverseJoinColumns = @JoinColumn(name = "id_role"))

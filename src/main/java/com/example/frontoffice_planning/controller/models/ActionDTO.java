@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 public class ActionDTO {
     private Long idAction;
 
-    @NotEmpty
+    @NotEmpty(message = "ActionDTO must have a name")
     private String name;
 
     public ActionDTO() {

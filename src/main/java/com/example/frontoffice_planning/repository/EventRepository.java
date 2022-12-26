@@ -1,6 +1,5 @@
 package com.example.frontoffice_planning.repository;
 
-import com.example.frontoffice_planning.controller.models.PlanningDTO;
 import com.example.frontoffice_planning.entity.Event;
 import com.example.frontoffice_planning.entity.Planning;
 import org.springframework.data.jpa.repository.JpaRepository;

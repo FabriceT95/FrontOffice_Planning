@@ -13,5 +13,8 @@ import java.util.Optional;
 public interface ShareRepository extends JpaRepository<Share, Long> {
     Optional<Share> findByPlanningEqualsAndUsersEquals(Planning planning, Users users);
 
-    List<Share> findAllByUsersEquals(Users users);
+    boolean existsShareByPlanningAndUsers(Planning planning, Users users);
+
+
+    List<Share> findAllByUsers(Users users);
 }

@@ -2,7 +2,6 @@ package com.example.frontoffice_planning.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity

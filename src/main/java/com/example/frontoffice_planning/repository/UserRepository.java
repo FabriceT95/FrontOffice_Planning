@@ -1,17 +1,20 @@
 package com.example.frontoffice_planning.repository;
 
+import com.example.frontoffice_planning.entity.Planning;
 import com.example.frontoffice_planning.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 
 @Repository
 public interface UserRepository extends JpaRepository<Users, Long> {
 
-    public boolean existsUserByEmail(String email);
+    boolean existsUserByEmail(String email);
+
+    boolean existsUsersByEmailAndPlanning(String email, Planning planning);
+
 
     Optional<Users> findByUsername(String pseudo);
 

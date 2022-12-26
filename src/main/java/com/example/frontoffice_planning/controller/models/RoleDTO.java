@@ -1,12 +1,13 @@
 package com.example.frontoffice_planning.controller.models;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 public class RoleDTO {
 
     private Long idRole;
 
-    @NotEmpty
+    @NotNull(message = "RoleDTO must have a name")
     private String name;
 
     public RoleDTO() {

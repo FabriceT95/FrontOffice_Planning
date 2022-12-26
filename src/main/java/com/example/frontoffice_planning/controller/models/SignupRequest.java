@@ -1,9 +1,16 @@
 package com.example.frontoffice_planning.controller.models;
 
+import jakarta.validation.constraints.NotNull;
+
 public class SignupRequest {
+
+    @NotNull(message = "SignupRequest must have an username")
     private String username;
+
+    @NotNull(message = "SignupRequest must have a password")
     private String password;
 
+    @NotNull(message = "SignupRequest must have an email")
     private String email;
 
     private String postalCode;

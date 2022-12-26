@@ -1,6 +1,7 @@
 package com.example.frontoffice_planning.controller.models;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -12,10 +13,10 @@ public class PlanningDTO {
 
     private long idPlanning;
 
-    @NotEmpty
+    @NotNull(message = "PlanningDTO must be associated with a UsersDTO")
     private UsersDTO usersDTO;
 
-    @NotEmpty
+    @NotNull(message = "PlanningDTO must have a name")
     @Size(min = 3, message = "planning name should have at least 3 characters")
     private String namePlanning;
 

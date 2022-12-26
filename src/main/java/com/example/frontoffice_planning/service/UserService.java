@@ -1,32 +1,31 @@
 package com.example.frontoffice_planning.service;
 
+import com.example.frontoffice_planning.controller.exception.ShareNotFoundException;
 import com.example.frontoffice_planning.controller.exception.UserAlreadyExistException;
 import com.example.frontoffice_planning.controller.exception.UserNotFoundException;
+import com.example.frontoffice_planning.controller.exception.UserNotOwnerException;
+import com.example.frontoffice_planning.controller.models.AddressDTO;
 import com.example.frontoffice_planning.controller.models.SignupRequest;
 import com.example.frontoffice_planning.controller.models.UsersDTO;
 import com.example.frontoffice_planning.entity.Address;
 import com.example.frontoffice_planning.entity.Planning;
 import com.example.frontoffice_planning.entity.Users;
-import com.example.frontoffice_planning.repository.AddressRepository;
 import com.example.frontoffice_planning.repository.PlanningRepository;
 import com.example.frontoffice_planning.repository.RoleRepository;
 import com.example.frontoffice_planning.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PlanningService planningService;
+    private final PlanningRepository planningRepository;
 
     private final RoleRepository roleRepository;
 
@@ -34,9 +33,9 @@ public class UserService {
 
     private PasswordEncoder encoder;
 
-    public UserService(UserRepository userRepository, PlanningService planningService, RoleRepository roleRepository, AddressService addressService) {
+    public UserService(UserRepository userRepository, PlanningRepository planningRepository, RoleRepository roleRepository, AddressService addressService) {
         this.userRepository = userRepository;
-        this.planningService = planningService;
+        this.planningRepository = planningRepository;
         this.addressService = addressService;
         this.roleRepository = roleRepository;
     }
@@ -46,40 +45,46 @@ public class UserService {
         boolean isExist = userRepository.existsUserByEmail(signupRequest.getEmail());
         if (isExist) {
             throw new UserAlreadyExistException(signupRequest.getEmail());
-        } else {
-
-            Users newUser = new Users();
-            newUser.setEmail(signupRequest.getEmail());
-            newUser.setUsername(signupRequest.getUsername());
-            newUser.setPassword(encoder.encode(signupRequest.getPassword()));
-            newUser.setActivated(true);
-            newUser.addRole(roleRepository.findById(1L).get());
-
-            Address addressDTO = new Address(signupRequest.getCity(), signupRequest.getPostalCode());
-
-            Address address = addressService.createAddress(addressDTO);
-            newUser.setAddress(address);
-
-            Planning planning = planningService.createPlanning(newUser.getUsername());
-
-            newUser.setPlanning(planning);
-
-
-            userRepository.save(newUser);
         }
+
+        Users newUser = new Users();
+        newUser.setEmail(signupRequest.getEmail());
+        newUser.setUsername(signupRequest.getUsername());
+        newUser.setPassword(encoder.encode(signupRequest.getPassword()));
+        newUser.setActivated(true);
+        newUser.addRole(roleRepository.findById(1L).get());
+
+        Address addressDTO = new Address(signupRequest.getCity(), signupRequest.getPostalCode());
+
+        Address address = addressService.createAddress(addressDTO);
+        newUser.setAddress(address);
+
+        System.out.println("Planning being created for new User...");
+
+        Planning planning = planningRepository.save(new Planning(newUser.getUsername() + "'s planning", LocalDateTime.now()));
+
+        System.out.println("Planning created with id " + planning.getIdPlanning());
+
+        newUser.setPlanning(planning);
+
+        System.out.println("User being saved...");
+
+        Users users = userRepository.save(newUser);
+
+        System.out.println("User " + users.getIdUser() + " is saved");
     }
 
     public void updateUser(UsersDTO usersDTO) throws UserNotFoundException {
         Optional<Users> OptUser = userRepository.findByEmail(usersDTO.getEmail());
         if (OptUser.isEmpty()) {
             throw new UserNotFoundException(usersDTO.getUsername());
-        } else {
-            Users user = OptUser.get();
-            user.setUsername(usersDTO.getUsername());
-            user.setPhoto(usersDTO.getPhoto());
-            // TODO : password
-            userRepository.save(user);
         }
+        Users user = OptUser.get();
+        user.setUsername(usersDTO.getUsername());
+        user.setPhoto(usersDTO.getPhoto());
+        // TODO : password
+        userRepository.save(user);
+        System.out.println("User " + user.getIdUser() + " is updated");
 
     }
 
@@ -87,7 +92,71 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public UsersDTO getUserDTOById(Long id) throws UserNotFoundException {
+
+        Optional<Users> user = userRepository.findById(id);
+
+        if (user.isEmpty()) {
+            throw new UserNotFoundException(id);
+        } else {
+            Users userEntity = user.get();
+            UsersDTO usersDTO = new UsersDTO();
+            usersDTO.setIdUser(userEntity.getIdUser());
+            usersDTO.setUsername(userEntity.getUsername());
+            usersDTO.setEmail(userEntity.getEmail());
+            usersDTO.setPhoto(userEntity.getPhoto());
+            usersDTO.setAddressDTO(new AddressDTO(userEntity.getAddress().getIdAddress(), userEntity.getAddress().getCity(), userEntity.getAddress().getPostalCode()));
+            usersDTO.setPlanningId(userEntity.getPlanning().getIdPlanning());
+            usersDTO.setSharedPlanningId(userEntity.getShare().stream().map(share -> share.getPlanning().getIdPlanning()).collect(Collectors.toList()));
+            return usersDTO;
+        }
+    }
+
+    public UsersDTO getUserDTOByName(String name) throws UserNotFoundException {
+        Optional<Users> user = userRepository.findByUsername(name);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException(name);
+        } else {
+            Users userEntity = user.get();
+            UsersDTO usersDTO = new UsersDTO();
+            usersDTO.setIdUser(userEntity.getIdUser());
+            usersDTO.setUsername(userEntity.getUsername());
+            usersDTO.setEmail(userEntity.getEmail());
+            usersDTO.setPhoto(userEntity.getPhoto());
+            usersDTO.setAddressDTO(new AddressDTO(userEntity.getAddress().getCity(), userEntity.getAddress().getPostalCode()));
+            usersDTO.setPlanningId(userEntity.getPlanning().getIdPlanning());
+            usersDTO.setSharedPlanningId(userEntity.getShare().stream().map(share -> share.getPlanning().getIdPlanning()).collect(Collectors.toList()));
+            return usersDTO;
+        }
+    }
+
+    public UsersDTO getUserDTOByEmail(String email) throws UserNotFoundException {
+        Optional<Users> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException(email);
+        } else {
+            Users userEntity = user.get();
+            UsersDTO usersDTO = new UsersDTO();
+            usersDTO.setIdUser(userEntity.getIdUser());
+            usersDTO.setUsername(userEntity.getUsername());
+            usersDTO.setEmail(userEntity.getEmail());
+            usersDTO.setPhoto(userEntity.getPhoto());
+            usersDTO.setAddressDTO(new AddressDTO(userEntity.getAddress().getCity(), userEntity.getAddress().getPostalCode()));
+            usersDTO.setPlanningId(userEntity.getPlanning().getIdPlanning());
+            usersDTO.setSharedPlanningId(userEntity.getShare().stream().map(share -> share.getPlanning().getIdPlanning()).collect(Collectors.toList()));
+            return usersDTO;
+        }
+    }
+
     public Optional<Users> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public boolean isOwner(Planning planning, Users users) throws UserNotOwnerException {
+        boolean isOwner = userRepository.existsUsersByEmailAndPlanning(users.getEmail(), planning);
+        if (!isOwner) {
+            throw new UserNotOwnerException(users.getEmail(), planning.getNamePlanning());
+        }
+        return true;
     }
 }

@@ -29,12 +29,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         if (tokenJwt != null && jwtUtils.validateToken(tokenJwt)) {
 
-            String username = jwtUtils.getUsernameFromToken(tokenJwt);
+            String email = jwtUtils.getEmailFromToken(tokenJwt);
 
-            Users user = (Users) userDetailsService.loadUserByUsername(username);
+            Users user = (Users) userDetailsService.loadUserByUsername(email);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            request.setAttribute("user", user);
         }
         filterChain.doFilter(request, response);
     }

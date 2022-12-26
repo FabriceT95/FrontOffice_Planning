@@ -1,16 +1,12 @@
 package com.example.frontoffice_planning.controller;
 
-import com.example.frontoffice_planning.controller.models.ActionDTO;
-import com.example.frontoffice_planning.controller.models.EventDTO;
+import com.example.frontoffice_planning.controller.exception.*;
+import com.example.frontoffice_planning.controller.models.ShareDTO;
 import com.example.frontoffice_planning.controller.models.TaskDTO;
-import com.example.frontoffice_planning.entity.Action;
-import com.example.frontoffice_planning.entity.Event;
-import com.example.frontoffice_planning.entity.Planning;
-import com.example.frontoffice_planning.entity.Task;
-import com.example.frontoffice_planning.repository.ActionRepository;
-import com.example.frontoffice_planning.repository.EventRepository;
+import com.example.frontoffice_planning.entity.*;
 import com.example.frontoffice_planning.repository.TaskRepository;
 import com.example.frontoffice_planning.service.PlanningService;
+import com.example.frontoffice_planning.service.ShareService;
 import com.example.frontoffice_planning.service.TaskService;
 import com.example.frontoffice_planning.service.UserService;
 import jakarta.validation.Valid;
@@ -18,74 +14,63 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 @RestController
 @CrossOrigin("http://localhost:4200")
 @RequestMapping("/api")
 public class TaskController {
 
     private final TaskRepository taskRepository;
-    private final ActionRepository actionRepository;
+    private final TaskService taskService;
+
+    private final ShareService shareService;
+    private final PlanningService planningService;
 
     private final UserService userService;
 
-    private final EventRepository eventRepository;
-    private final TaskService taskService;
-
-    private final PlanningService planningService;
-
-    public TaskController(TaskRepository taskRepository, ActionRepository actionRepository, TaskService taskService, PlanningService planningService, EventRepository eventRepository, UserService userService) {
+    public TaskController(TaskRepository taskRepository, TaskService taskService, PlanningService planningService, ShareService shareService, UserService userService) {
         this.taskRepository = taskRepository;
-        this.actionRepository = actionRepository;
         this.taskService = taskService;
         this.planningService = planningService;
-        this.eventRepository = eventRepository;
+        this.shareService = shareService;
         this.userService = userService;
     }
 
     /**
      * Find a task based on ID
      *
-     * @param idTask
+     * @param idTask Task id user is looking for
+     * @param users  Getting authenticated user from the auth filter
      * @return taskDTO Formatted Task object for Front-End
      */
 
     @GetMapping("/task/{id}")
-    public ResponseEntity<TaskDTO> getTaskById(@PathVariable("id") long idTask) {
-
-        Optional<Task> seachedTask = taskRepository.findById(idTask);
-
-        if (seachedTask.isPresent()) {
-            Task task = seachedTask.get();
-
-            TaskDTO taskDTO = new TaskDTO();
-            taskDTO.setIdTask(task.getIdTask());
-            taskDTO.setIdPlanning(task.getPlanningByIdPlanning().getIdPlanning());
-            taskDTO.setNameTask(task.getNameTask());
-            taskDTO.setDescription(task.getDescription());
-            taskDTO.setDateCreated(task.getDateCreated());
-            taskDTO.setDateTaskStart(task.getDateTaskStart());
-            taskDTO.setDateTaskEnd(task.getDateTaskEnd());
-            taskDTO.setEventList(task.getEventsByIdTask().stream().map(event -> {
-                EventDTO eventDTO = new EventDTO();
-                eventDTO.setIdPlanning(event.getPlanning().getIdPlanning());
-                eventDTO.setDateCreated(event.getDateCreated());
-                ActionDTO actionDTO = new ActionDTO();
-                actionDTO.setIdAction(event.getAction().getIdAction());
-                actionDTO.setName(event.getAction().getName());
-                eventDTO.setActionDTO(actionDTO);
-                eventDTO.setIdEvent(event.getIdEvent());
-                return eventDTO;
-            }).collect(Collectors.toList()));
-
+    public ResponseEntity<TaskDTO> getTaskById(@RequestAttribute("user") Users users, @PathVariable("id") long idTask) {
+        try {
+            TaskDTO taskDTO = taskService.getTaskDTOById(idTask, users);
             return ResponseEntity.status(HttpStatus.OK).body(taskDTO);
-        } else {
+        } catch (TaskNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (UserNotOwnerException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
 
+    /**
+     * @param users  Getting authenticated user from the auth filter
+     * @param idTask Task id user is looking for
+     * @param shareDTO key object attesting sharing request
+     * @return taskDTO with ID if success, otherwise returns an error
+     */
+    @GetMapping("/task/shared/{id}")
+    public ResponseEntity<TaskDTO> getTaskByIdShared(@RequestAttribute("user") Users users, @PathVariable("id") long idTask, @RequestBody ShareDTO shareDTO) {
+        try {
+            TaskDTO taskDTO = taskService.getTaskDTOByIdShared(idTask, shareDTO, users);
+            return ResponseEntity.status(HttpStatus.OK).body(taskDTO);
+        } catch (TaskNotFoundException | PlanningNotFoundException | UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ShareNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     // Always need to check if it's owner or shared
@@ -93,44 +78,45 @@ public class TaskController {
     /**
      * Create a Task from DTO
      *
-     * @param taskDTO
-     * @return taskDTO with ID
+     * @param taskDTO Task to create
+     * @param users   Getting authenticated user from the auth filter
+     * @return taskDTO with ID if success, otherwise returns an error
      */
     @PostMapping("/task")
-    public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<TaskDTO> createTask(@RequestAttribute("user") Users users, @RequestBody TaskDTO taskDTO) {
+        try {
+            Planning planning = planningService.getPlanningById(taskDTO.getIdPlanning());
+            userService.isOwner(planning, users);
+            TaskDTO createdTaskDTO = taskService.createTask(taskDTO, planning, users);
+            return ResponseEntity.status(HttpStatus.OK).body(createdTaskDTO);
+        } catch (PlanningNotFoundException | UserNotFoundException | ActionNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (UserNotOwnerException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
-        Task newTask = new Task();
+    /**
+     * Create a Task from DTO and from a shared user
+     *
+     * @param taskDTO Task to create
+     * @param users   Getting authenticated user from the auth filter
+     * @return taskDTO with ID if success, otherwise returns an error
+     */
+    @PostMapping("/task/shared")
+    public ResponseEntity<TaskDTO> createTaskShared(@RequestAttribute("user") Users users, @RequestBody TaskDTO taskDTO) {
 
-        newTask.setNameTask(taskDTO.getNameTask());
-        newTask.setDescription(taskDTO.getDescription());
-        newTask.setDateTaskStart(taskDTO.getDateTaskStart());
-        newTask.setDateTaskEnd(taskDTO.getDateTaskEnd());
-        newTask.setDateCreated(LocalDateTime.now());
-        newTask.setPlanning(planningService.getPlanningById(taskDTO.getIdPlanning()).get());
-        Event event = new Event(LocalDateTime.now(), actionRepository.findById(1L).get());
-        event.setPlanning(planningService.getPlanningById(taskDTO.getIdPlanning()).get());
-        event.setUser(userService.getUserById(1L).get());
-        newTask.addEvent(event);
-
-
-        Task createdTask = taskService.createTask(newTask);
-        event.setTask(createdTask);
-        eventRepository.save(event);
-
-        taskDTO.setDateCreated(createdTask.getDateCreated());
-        taskDTO.setIdTask(createdTask.getIdTask());
-        taskDTO.setEventList(newTask.getEventsByIdTask().stream().map(e -> {
-            EventDTO eventDTO = new EventDTO();
-            eventDTO.setIdPlanning(e.getPlanning().getIdPlanning());
-            eventDTO.setDateCreated(e.getDateCreated());
-            ActionDTO actionDTO = new ActionDTO();
-            actionDTO.setIdAction(e.getAction().getIdAction());
-            actionDTO.setName(e.getAction().getName());
-            eventDTO.setActionDTO(actionDTO);
-            eventDTO.setIdEvent(e.getIdEvent());
-            return eventDTO;
-        }).collect(Collectors.toList()));
-        return ResponseEntity.status(HttpStatus.OK).body(taskDTO);
+        try {
+            Planning planning = planningService.getPlanningById(taskDTO.getIdPlanning());
+            shareService.shareExists(planning, users);
+            shareService.isFullAccess(planning, users);
+            TaskDTO createdTaskDTO = taskService.createTask(taskDTO, planning, users);
+            return ResponseEntity.status(HttpStatus.OK).body(createdTaskDTO);
+        } catch (PlanningNotFoundException | UserNotFoundException | ActionNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ShareNotFoundException | ShareReadOnlyException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
 
@@ -138,84 +124,87 @@ public class TaskController {
     // Maybe not delete, but set as delete but table will grow . Just keeping task as delete for logging.
 
     /**
-     * Delete a Task based on ID
+     * Edit a Task with a DTO (dedicated for the owner)
      *
-     * @param id
-     * @return HttpStatus success or not found
+     * @param taskDTO Task to update (data which will update current same task id)
+     * @param users   Getting authenticated user from the auth filter
+     * @return taskDTO updated (name, dates, description, new event Update)
      */
-    @DeleteMapping("/task/delete/{id}")
-    public ResponseEntity<HttpStatus> deleteTask(@PathVariable("id") long id) {
-
-        Optional<Task> deleteTask = taskRepository.findById(id);
-
-        if (deleteTask.isPresent()) {
-            taskService.delete(deleteTask.get());
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } else {
+    @PutMapping("/task/edit")
+    public ResponseEntity<TaskDTO> editTask(@RequestAttribute("user") Users users, @Valid @RequestBody TaskDTO taskDTO) {
+        try {
+            Planning planning = planningService.getPlanningById(taskDTO.getIdPlanning());
+            userService.isOwner(planning, users);
+            taskDTO = taskService.updateTask(taskDTO, users);
+            return ResponseEntity.status(HttpStatus.OK).body(taskDTO);
+        } catch (PlanningNotFoundException | UserNotFoundException | TaskNotFoundException |
+                 ActionNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (UserNotOwnerException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
     }
 
     /**
-     * Edit a Task with a DTO
+     * Edit a Task with a DTO (dedicated for sharing)
      *
-     * @param taskDTO
-     * @param id      Task Id
+     * @param users   Getting authenticated user from the auth filter
+     * @param taskDTO Task to update (data which will update current same task id)
      * @return taskDTO updated (name, dates, description, new event Update)
      */
-    @PutMapping("/task/edit/{id}")
-    public ResponseEntity<TaskDTO> editTask(@Valid @RequestBody TaskDTO taskDTO, @PathVariable("id") long id) {
-
-        Optional<Task> optUpdatedTask = taskRepository.findById(id);
-        if (optUpdatedTask.isPresent()) {
-            Optional<Planning> optPlanning = planningService.getPlanningById(taskDTO.getIdPlanning());
-            if (optPlanning.isPresent()) {
-                Task updatedTask = optUpdatedTask.get();
-                updatedTask.setNameTask(taskDTO.getNameTask());
-                updatedTask.setDateTaskStart(taskDTO.getDateTaskStart());
-                updatedTask.setDateTaskEnd(taskDTO.getDateTaskEnd());
-                updatedTask.setDescription(taskDTO.getDescription());
-                Event event = new Event();
-                event.setTask(updatedTask);
-                event.setDateCreated(LocalDateTime.now());
-                event.setPlanning(optPlanning.get());
-                // Need to get the user
-                //event.setUser();
-                event.setAction(actionRepository.findById(2L).get());
-
-                Event savedEvent = eventRepository.save(event);
-
-                updatedTask.addEvent(savedEvent);
-
-                Task task = taskService.createTask(updatedTask);
-
-                // Sets up a new EventDTO which contains an ActionDTO
-                EventDTO eventDTO = new EventDTO();
-                ActionDTO actionDTO = new ActionDTO();
-                actionDTO.setIdAction(savedEvent.getAction().getIdAction());
-                actionDTO.setName(savedEvent.getAction().getName());
-
-                // Add actionDTO to the eventDTO
-                eventDTO.setActionDTO(actionDTO);
-                eventDTO.setIdEvent(savedEvent.getIdEvent());
-                eventDTO.setDateCreated(savedEvent.getDateCreated());
-                eventDTO.setIdPlanning(savedEvent.getPlanning().getIdPlanning());
-
-
-                taskDTO.setNameTask(task.getNameTask());
-                taskDTO.setDateTaskStart(task.getDateTaskStart());
-                taskDTO.setDateTaskEnd(task.getDateTaskEnd());
-                taskDTO.setDescription(task.getDescription());
-                taskDTO.addEvent(eventDTO);
-
-                return ResponseEntity.status(HttpStatus.OK).body(taskDTO);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-        } else {
+    @PutMapping("/task/shared/edit")
+    public ResponseEntity<TaskDTO> editTaskShared(@RequestAttribute("user") Users users, @Valid @RequestBody TaskDTO taskDTO) {
+        try {
+            Planning planning = planningService.getPlanningById(taskDTO.getIdPlanning());
+            shareService.shareExists(planning, users);
+            shareService.isFullAccess(planning, users);
+            taskDTO = taskService.updateTask(taskDTO, users);
+            return ResponseEntity.status(HttpStatus.OK).body(taskDTO);
+        } catch (PlanningNotFoundException | UserNotFoundException | TaskNotFoundException |
+                 ActionNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ShareNotFoundException | ShareReadOnlyException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
+    /**
+     * Delete a Task based on ID
+     *
+     * @param id task id to delete
+     * @return HttpStatus success or not found
+     */
+    @DeleteMapping("/task/delete/{id}")
+    public ResponseEntity<HttpStatus> deleteTask(@RequestAttribute("user") Users users, @PathVariable("id") long id) {
+
+        try {
+            taskService.delete(id, users);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (UserNotFoundException | TaskNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (UserNotOwnerException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    /**
+     * Delete a Shared Task based on ID
+     *
+     * @param id task id to delete
+     * @param shareDTO key object attesting sharing request
+     * @param users Getting authenticated user from the auth filter
+     * @return HttpStatus success or not found
+     */
+    @DeleteMapping("/task/shared/delete/{id}")
+    public ResponseEntity<HttpStatus> deleteTaskShared(@RequestAttribute("user") Users users, @RequestBody ShareDTO shareDTO, @PathVariable("id") long id) {
+
+        try {
+            taskService.deleteShared(id, shareDTO, users);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (UserNotFoundException | TaskNotFoundException | PlanningNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ShareNotFoundException | ShareReadOnlyException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 }

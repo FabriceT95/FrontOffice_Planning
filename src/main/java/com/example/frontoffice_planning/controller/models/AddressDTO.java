@@ -1,14 +1,15 @@
 package com.example.frontoffice_planning.controller.models;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 public class AddressDTO {
     private Long idAddress;
 
-    @NotEmpty
+    @NotNull(message = "AddressDTO must have a city")
     private String city;
 
-    @NotEmpty
+    @NotNull(message = "AddressDTO must have a zipCode")
     private String postalCode;
 
     public AddressDTO() {
