@@ -2,6 +2,7 @@ package com.example.frontoffice_planning.controller;
 
 import com.example.frontoffice_planning.controller.exception.UserNotFoundException;
 import com.example.frontoffice_planning.controller.models.UsersDTO;
+import com.example.frontoffice_planning.entity.Users;
 import com.example.frontoffice_planning.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,18 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+
+    /**
+     * Getting the user logged in from his token.
+     *
+     * @param users Getting authenticated user from the auth filter
+     * @return UserDTO, simple representation of a User
+     */
+    @GetMapping("/users")
+    public ResponseEntity<UsersDTO> getUser(@RequestAttribute("user") Users users) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getLoggedUser(users));
     }
 
     /**
