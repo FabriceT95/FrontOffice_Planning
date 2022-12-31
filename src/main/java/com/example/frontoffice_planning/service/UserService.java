@@ -5,6 +5,7 @@ import com.example.frontoffice_planning.controller.exception.UserAlreadyExistExc
 import com.example.frontoffice_planning.controller.exception.UserNotFoundException;
 import com.example.frontoffice_planning.controller.exception.UserNotOwnerException;
 import com.example.frontoffice_planning.controller.models.AddressDTO;
+import com.example.frontoffice_planning.controller.models.RoleDTO;
 import com.example.frontoffice_planning.controller.models.SignupRequest;
 import com.example.frontoffice_planning.controller.models.UsersDTO;
 import com.example.frontoffice_planning.entity.Address;
@@ -14,6 +15,7 @@ import com.example.frontoffice_planning.repository.PlanningRepository;
 import com.example.frontoffice_planning.repository.RoleRepository;
 import com.example.frontoffice_planning.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ public class UserService {
 
     private final AddressService addressService;
 
+    @Autowired
     private PasswordEncoder encoder;
 
     public UserService(UserRepository userRepository, PlanningRepository planningRepository, RoleRepository roleRepository, AddressService addressService) {
@@ -38,6 +41,24 @@ public class UserService {
         this.planningRepository = planningRepository;
         this.addressService = addressService;
         this.roleRepository = roleRepository;
+    }
+
+    public UsersDTO getLoggedUser(Users users) {
+        UsersDTO usersDTO = new UsersDTO();
+        usersDTO.setIdUser(users.getIdUser());
+        usersDTO.setUsername(users.getUsername());
+        usersDTO.setEmail(users.getEmail());
+        usersDTO.setPhoto(users.getPhoto());
+        usersDTO.setAddressDTO(new AddressDTO(users.getAddress().getIdAddress(), users.getAddress().getCity(), users.getAddress().getPostalCode()));
+        usersDTO.setPlanningId(users.getPlanning().getIdPlanning());
+        usersDTO.setRoleDTOList(users.getRoles().stream().map(role -> {
+            RoleDTO roleDTO = new RoleDTO();
+            roleDTO.setIdRole(role.getIdRole());
+            roleDTO.setName(role.getName());
+            return roleDTO;
+        }).collect(Collectors.toList()));
+        usersDTO.setSharedPlanningId(users.getShare().stream().map(share -> share.getPlanning().getIdPlanning()).collect(Collectors.toList()));
+        return usersDTO;
     }
 
     @Transactional
