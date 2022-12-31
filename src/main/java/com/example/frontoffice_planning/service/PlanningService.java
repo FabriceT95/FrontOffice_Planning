@@ -50,9 +50,9 @@ public class PlanningService {
         return optPlanning.get();
     }
 
-    public PlanningDTO getPlanningByOwner(UsersDTO usersDTO, Users users) throws PlanningNotFoundException, UserNotOwnerException, UserNotMatchShareRequest {
+    public PlanningDTO getPlanningByOwner(Users users) throws PlanningNotFoundException {
 
-        if (!Objects.equals(usersDTO.getEmail(), users.getEmail())) {
+       /* if (!Objects.equals(usersDTO.getEmail(), users.getEmail())) {
             throw new UserNotMatchShareRequest();
         }
 
@@ -62,15 +62,17 @@ public class PlanningService {
         }
         if (!optPlanning.get().getUser().getIdUser().equals(usersDTO.getIdUser())) {
             throw new UserNotOwnerException(usersDTO.getUsername(), optPlanning.get().getNamePlanning());
-        }
+        }*/
 
-        Planning planning = optPlanning.get();
+        // Planning planning = optPlanning.get();
+        //Planning planning = users.getPlanning();
+        Planning planning = getPlanningById(users.getPlanning().getIdPlanning());
         PlanningDTO planningDTO = new PlanningDTO();
         planningDTO.setIdPlanning(planning.getIdPlanning());
         planningDTO.setNamePlanning(planning.getNamePlanning());
         planningDTO.setDateCreated(planning.getDateCreated());
 
-        planningDTO.setUsersDTO(usersDTO);
+        // planningDTO.setUsersDTO(usersDTO);
         planningDTO.setReadOnly(false);
 
         List<Task> taskList = planning.getTasks();
@@ -183,7 +185,7 @@ public class PlanningService {
             throw new UserNotFoundException(shareDTO.getEmail());
         }
 
-        shareService.isFullAccess(planning,users);
+        shareService.isFullAccess(planning, users);
 
         Share share = shareService.getShareByPlanningAndUser(planning, optUser.get());
 
