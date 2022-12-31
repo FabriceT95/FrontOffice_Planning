@@ -56,7 +56,7 @@ public class Users implements UserDetails {
     @JoinColumn(name = "id_planning", nullable = false)
     private Planning planning;
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Share> share = new ArrayList<>();
 
     @OneToMany(mappedBy = "users")
