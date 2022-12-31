@@ -37,17 +37,14 @@ public class PlanningController {
     /**
      * Retrieve the Owner planning.
      *
-     * @param users   Getting authenticated user from the auth filter
-     * @param userDTO simple representation of a User
+     * @param users Getting authenticated user from the auth filter
      * @return planningDTO Planning object with all tasks and basic attributes
      */
     @GetMapping("/planning")
-    public ResponseEntity<PlanningDTO> getPlanningById(@RequestAttribute("user") Users users, @Valid @RequestBody UsersDTO userDTO) {
+    public ResponseEntity<PlanningDTO> getPlanningOwner(@RequestAttribute("user") Users users) {
         try {
-            PlanningDTO planningDTO = planningService.getPlanningByOwner(userDTO, users);
+            PlanningDTO planningDTO = planningService.getPlanningByOwner(users);
             return ResponseEntity.status(HttpStatus.OK).body(planningDTO);
-        } catch (UserNotOwnerException | UserNotMatchShareRequest e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (PlanningNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
