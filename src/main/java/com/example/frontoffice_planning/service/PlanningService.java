@@ -97,15 +97,15 @@ public class PlanningService {
 
     public PlanningDTO getPlanningShared(ShareDTO shareDTO, Users users) throws PlanningNotFoundException, UserNotFoundException, ShareNotFoundException, UserNotMatchShareRequest {
 
-        if (!Objects.equals(shareDTO.getEmail(), users.getEmail())) {
+        if (!Objects.equals(shareDTO.getUserId(), users.getIdUser())) {
             throw new UserNotMatchShareRequest();
         }
 
         Planning planning = getPlanningById(shareDTO.getPlanningId());
-        Optional<Users> optUser = userService.getUserByEmail(shareDTO.getEmail());
+        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
 
         if (optUser.isEmpty()) {
-            throw new UserNotFoundException(shareDTO.getEmail());
+            throw new UserNotFoundException(shareDTO.getUserId());
         }
 
         Share share = shareService.getShareByPlanningAndUser(planning, optUser.get());
@@ -175,14 +175,14 @@ public class PlanningService {
 
     public PlanningDTO updatePlanningNameShared(String name, ShareDTO shareDTO, Users users) throws PlanningNotFoundException, UserNotFoundException, UserNotMatchShareRequest, ShareNotFoundException, ShareReadOnlyException {
         System.out.println("Shared Planning " + shareDTO.getPlanningId() + " is being updated...");
-        if (!Objects.equals(shareDTO.getEmail(), users.getEmail())) {
+        if (!Objects.equals(shareDTO.getUserId(), users.getIdUser())) {
             throw new UserNotMatchShareRequest();
         }
         Planning planning = getPlanningById(shareDTO.getPlanningId());
-        Optional<Users> optUser = userService.getUserByEmail(shareDTO.getEmail());
+        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
 
         if (optUser.isEmpty()) {
-            throw new UserNotFoundException(shareDTO.getEmail());
+            throw new UserNotFoundException(shareDTO.getUserId());
         }
 
         shareService.isFullAccess(planning, users);

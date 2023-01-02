@@ -124,8 +124,8 @@ public class TaskService {
     public TaskDTO getTaskDTOByIdShared(long id, ShareDTO shareDTO, Users users) throws TaskNotFoundException, PlanningNotFoundException, UserNotFoundException, ShareNotFoundException {
 
         Planning planning = planningService.getPlanningById(shareDTO.getPlanningId());
-        Optional<Users> optUsers = userService.getUserByEmail(shareDTO.getEmail());
-        if (optUsers.isEmpty()) throw new UserNotFoundException(shareDTO.getEmail());
+        Optional<Users> optUsers = userService.getUserById(shareDTO.getUserId());
+        if (optUsers.isEmpty()) throw new UserNotFoundException(shareDTO.getUserId());
         shareService.shareExists(planning, users);
 
         Optional<Task> searchedTask = taskRepository.findById(id);

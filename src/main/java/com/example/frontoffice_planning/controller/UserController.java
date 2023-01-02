@@ -1,6 +1,10 @@
 package com.example.frontoffice_planning.controller;
 
+import com.example.frontoffice_planning.controller.exception.PlanningNotFoundException;
+import com.example.frontoffice_planning.controller.exception.ShareNotFoundException;
 import com.example.frontoffice_planning.controller.exception.UserNotFoundException;
+import com.example.frontoffice_planning.controller.exception.UserNotOwnerException;
+import com.example.frontoffice_planning.controller.models.GetSharedUsersDTO;
 import com.example.frontoffice_planning.controller.models.UsersDTO;
 import com.example.frontoffice_planning.entity.Users;
 import com.example.frontoffice_planning.service.UserService;
@@ -8,6 +12,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Objects;
 
 
 @RestController
@@ -83,6 +90,18 @@ public class UserController {
 
     }
 
+    @PostMapping("/users/shared")
+    public ResponseEntity<List<UsersDTO>> getSharedUsers(@RequestAttribute("user") Users users, @Valid @RequestBody GetSharedUsersDTO getSharedUsersDTO) {
+        try {
+            List<UsersDTO> usersDTOList = userService.getSharedUsers(getSharedUsersDTO, users);
+            return ResponseEntity.status(HttpStatus.OK).body(usersDTOList);
+        } catch (ShareNotFoundException | UserNotOwnerException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (PlanningNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
 
     /**
      * Authenticated user updating his profile. Auth filter only allows authenticated users to get there
@@ -99,5 +118,6 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(usersDTO);
     }
+
 
 }

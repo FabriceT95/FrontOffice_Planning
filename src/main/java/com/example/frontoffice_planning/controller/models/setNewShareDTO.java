@@ -1,20 +1,18 @@
 package com.example.frontoffice_planning.controller.models;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-public class ShareDTO {
-
-    @NotNull(message = "Share DTO must have a planningId")
+public class setNewShareDTO {
+    @NotNull(message = "New Share DTO must have a planningId")
     private Long planningId;
 
-    @NotNull(message = "Share DTO must have an userId")
-    private Long userId;
+    @NotNull(message = "New Share DTO must have an email")
+    private String email;
 
     @NotNull(message = "Share DTO must have a boolean isReadOnly")
     private boolean isReadOnly;
 
-    public ShareDTO() {
+    public setNewShareDTO() {
     }
 
     public Long getPlanningId() {
@@ -25,12 +23,12 @@ public class ShareDTO {
         this.planningId = planningId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public boolean isReadOnly() {

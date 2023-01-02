@@ -1,13 +1,7 @@
 package com.example.frontoffice_planning.service;
 
-import com.example.frontoffice_planning.controller.exception.ShareNotFoundException;
-import com.example.frontoffice_planning.controller.exception.UserAlreadyExistException;
-import com.example.frontoffice_planning.controller.exception.UserNotFoundException;
-import com.example.frontoffice_planning.controller.exception.UserNotOwnerException;
-import com.example.frontoffice_planning.controller.models.AddressDTO;
-import com.example.frontoffice_planning.controller.models.RoleDTO;
-import com.example.frontoffice_planning.controller.models.SignupRequest;
-import com.example.frontoffice_planning.controller.models.UsersDTO;
+import com.example.frontoffice_planning.controller.exception.*;
+import com.example.frontoffice_planning.controller.models.*;
 import com.example.frontoffice_planning.entity.Address;
 import com.example.frontoffice_planning.entity.Planning;
 import com.example.frontoffice_planning.entity.Users;
@@ -20,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,14 +30,17 @@ public class UserService {
 
     private final AddressService addressService;
 
+    private final ShareService shareService;
+
     @Autowired
     private PasswordEncoder encoder;
 
-    public UserService(UserRepository userRepository, PlanningRepository planningRepository, RoleRepository roleRepository, AddressService addressService) {
+    public UserService(UserRepository userRepository, PlanningRepository planningRepository, RoleRepository roleRepository, AddressService addressService, ShareService shareService) {
         this.userRepository = userRepository;
         this.planningRepository = planningRepository;
         this.addressService = addressService;
         this.roleRepository = roleRepository;
+        this.shareService = shareService;
     }
 
     public UsersDTO getLoggedUser(Users users) {
@@ -171,6 +171,26 @@ public class UserService {
 
     public Optional<Users> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public List<UsersDTO> getSharedUsers(GetSharedUsersDTO getSharedUsersDTO, Users users) throws PlanningNotFoundException, ShareNotFoundException, UserNotOwnerException {
+        Optional<Planning> optPlanning = planningRepository.findById(getSharedUsersDTO.getIdPlanning());
+        if (optPlanning.isEmpty()) {
+            throw new PlanningNotFoundException(getSharedUsersDTO.getIdPlanning());
+        }
+        Planning planning = optPlanning.get();
+        boolean isAuthorized = !isOwner(planning, users) && !shareService.shareExists(planning, users);
+
+        if (planning.getShare().isEmpty()) {
+            return List.of();
+        }
+        return planning.getShare().stream().map((share -> {
+            try {
+                return getUserDTOById(share.getUsers().getIdUser());
+            } catch (UserNotFoundException e) {
+                return null;
+            }
+        })).collect(Collectors.toList());
     }
 
     public boolean isOwner(Planning planning, Users users) throws UserNotOwnerException {

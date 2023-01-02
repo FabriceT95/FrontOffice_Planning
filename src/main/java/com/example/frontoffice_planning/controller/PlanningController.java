@@ -125,15 +125,16 @@ public class PlanningController {
      * Allows the owner to add a new user to his planning.
      * ShareDTO manages the readOnly value (can be set on update)
      *
-     * @param shareDTO key object attesting sharing request
-     * @param users    Getting authenticated user from the auth filter
+     * @param newShareDTO key object attesting new user to add as shared
+     * @param users       Getting authenticated user from the auth filter
      * @return PlanningDTO Planning object with all tasks and basic attributes + updated list of share if success
      */
     @PostMapping("/share")
-    public ResponseEntity<ShareDTO> addNewShareToPlanning(@RequestAttribute("user") Users users, @Valid @RequestBody ShareDTO shareDTO) {
+    public ResponseEntity<ShareDTO> addNewShareToPlanning(@RequestAttribute("user") Users users, @Valid @RequestBody setNewShareDTO newShareDTO) {
         try {
-            shareDTO = shareService.createShare(shareDTO, users);
+            ShareDTO shareDTO = shareService.createShare(newShareDTO, users);
             return ResponseEntity.status(HttpStatus.OK).body(shareDTO);
+            /*  return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("message is here", HttpStatus.UNAUTHORIZED));*/
         } catch (UserNotOwnerException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (ShareAlreadyExistsException e) {
@@ -169,13 +170,17 @@ public class PlanningController {
      * Allows the owner to delete user from his planning.
      * With ShareDTO as body, we get the planning id and the user share-with id
      *
-     * @param shareDTO key object attesting sharing request
-     * @param users    Getting authenticated user from the auth filter
+     * @param idUser User id to target
+     * @param id     Planning id to target
+     * @param users  Getting authenticated user from the auth filter
      * @return PlanningDTO Planning object with all tasks and basic attributes + updated list of share if success
      */
     @DeleteMapping("/share")
-    public ResponseEntity<PlanningDTO> deleteShareFromPlanning(@RequestAttribute("user") Users users, @Valid @RequestBody ShareDTO shareDTO) {
+    public ResponseEntity<PlanningDTO> deleteShareFromPlanning(@RequestParam("id") long id, @RequestParam("idUser") long idUser, @RequestAttribute("user") Users users) {
         try {
+            ShareDTO shareDTO = new ShareDTO();
+            shareDTO.setPlanningId(id);
+            shareDTO.setUserId(idUser);
             shareService.deleteShare(shareDTO, users);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (PlanningNotFoundException | ShareNotFoundException | UserNotFoundException e) {

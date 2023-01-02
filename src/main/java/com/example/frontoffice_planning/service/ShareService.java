@@ -2,12 +2,14 @@ package com.example.frontoffice_planning.service;
 
 import com.example.frontoffice_planning.controller.exception.*;
 import com.example.frontoffice_planning.controller.models.ShareDTO;
+import com.example.frontoffice_planning.controller.models.setNewShareDTO;
 import com.example.frontoffice_planning.entity.Planning;
 import com.example.frontoffice_planning.entity.Share;
 import com.example.frontoffice_planning.entity.ShareId;
 import com.example.frontoffice_planning.entity.Users;
 import com.example.frontoffice_planning.repository.PlanningRepository;
 import com.example.frontoffice_planning.repository.ShareRepository;
+import com.example.frontoffice_planning.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class ShareService {
     private PlanningRepository planningRepository;
 
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
     public Share getShareByPlanningAndUser(Planning p, Users u) throws ShareNotFoundException {
         Optional<Share> optShare = shareRepository.findByPlanningEqualsAndUsersEquals(p, u);
@@ -73,29 +75,34 @@ public class ShareService {
         return shareRepository.findAllByUsers(users);
     }
 
-    public ShareDTO createShare(ShareDTO shareDTO, Users users) throws PlanningNotFoundException, UserNotOwnerException, UserNotFoundException, ShareAlreadyExistsException {
-        System.out.println("Creating a Share for User with email " + shareDTO.getEmail() + " associated with the Planning " + users.getPlanning().getIdPlanning() + "...");
-        Optional<Planning> optPlanning = planningRepository.findById(shareDTO.getPlanningId());
+    public ShareDTO createShare(setNewShareDTO newShareDTO, Users users) throws PlanningNotFoundException, UserNotOwnerException, UserNotFoundException, ShareAlreadyExistsException {
+        System.out.println("Creating a Share for User with email " + newShareDTO.getEmail() + " associated with the Planning " + users.getPlanning().getIdPlanning() + "...");
+        Optional<Planning> optPlanning = planningRepository.findById(newShareDTO.getPlanningId());
         if (optPlanning.isEmpty()) {
-            throw new PlanningNotFoundException(shareDTO.getPlanningId());
+            throw new PlanningNotFoundException(newShareDTO.getPlanningId());
         }
         Planning planning = optPlanning.get();
         if (!Objects.equals(planning.getUser().getEmail(), users.getEmail())) {
             throw new UserNotOwnerException(users.getUsername(), planning.getNamePlanning());
         }
 
-        Optional<Users> optUsersToShareWith = userService.getUserByEmail(shareDTO.getEmail());
+        Optional<Users> optUsersToShareWith = userRepository.findByEmail(newShareDTO.getEmail());
         if (optUsersToShareWith.isEmpty()) {
-            throw new UserNotFoundException(shareDTO.getEmail());
+            throw new UserNotFoundException(newShareDTO.getEmail());
         }
 
         Users usersToShareWith = optUsersToShareWith.get();
 
         shareNotExist(planning, usersToShareWith);
 
-        Share share = new Share(new ShareId(usersToShareWith.getIdUser(), planning.getIdPlanning()), planning, usersToShareWith, shareDTO.isReadOnly());
-        save(share);
+        Share share = new Share(new ShareId(usersToShareWith.getIdUser(), planning.getIdPlanning()), planning, usersToShareWith, newShareDTO.isReadOnly());
+        share = save(share);
         System.out.println("Share has been saved");
+
+        ShareDTO shareDTO = new ShareDTO();
+        shareDTO.setUserId(share.getUsers().getIdUser());
+        shareDTO.setPlanningId(share.getPlanning().getIdPlanning());
+        shareDTO.setReadOnly(share.getIsReadOnly());
 
         return shareDTO;
 
@@ -103,7 +110,7 @@ public class ShareService {
     }
 
     public void deleteShare(ShareDTO shareDTO, Users users) throws PlanningNotFoundException, UserNotOwnerException, ShareNotFoundException, UserNotFoundException {
-        System.out.println("Delete a Share for User with email " + shareDTO.getEmail() + " associated with the Planning " + users.getPlanning().getIdPlanning() + "...");
+        System.out.println("Delete a Share for User with ID " + shareDTO.getUserId() + " associated with the Planning ID " + users.getPlanning().getIdPlanning() + "...");
         Optional<Planning> optPlanning = planningRepository.findById(shareDTO.getPlanningId());
         if (optPlanning.isEmpty()) {
             throw new PlanningNotFoundException(shareDTO.getPlanningId());
@@ -113,9 +120,9 @@ public class ShareService {
             throw new UserNotOwnerException(users.getUsername(), planning.getNamePlanning());
         }
 
-        Optional<Users> optUsersToShareWith = userService.getUserByEmail(shareDTO.getEmail());
+        Optional<Users> optUsersToShareWith = userRepository.findById(shareDTO.getUserId());
         if (optUsersToShareWith.isEmpty()) {
-            throw new UserNotFoundException(shareDTO.getEmail());
+            throw new UserNotFoundException(shareDTO.getUserId());
         }
 
         Users usersToShareWith = optUsersToShareWith.get();
@@ -126,7 +133,7 @@ public class ShareService {
     }
 
     public ShareDTO updateShare(ShareDTO shareDTO, Users users) throws PlanningNotFoundException, UserNotOwnerException, ShareNotFoundException, UserNotFoundException {
-        System.out.println("Updating a Share for User with email " + shareDTO.getEmail() + " associated with the Planning " + users.getPlanning().getIdPlanning() + "...");
+        System.out.println("Updating a Share for User with ID " + shareDTO.getUserId() + " associated with the Planning " + users.getPlanning().getIdPlanning() + "...");
         Optional<Planning> optPlanning = planningRepository.findById(shareDTO.getPlanningId());
         if (optPlanning.isEmpty()) {
             throw new PlanningNotFoundException(shareDTO.getPlanningId());
@@ -136,9 +143,9 @@ public class ShareService {
             throw new UserNotOwnerException(users.getUsername(), planning.getNamePlanning());
         }
 
-        Optional<Users> optUsersToShareWith = userService.getUserByEmail(shareDTO.getEmail());
+        Optional<Users> optUsersToShareWith = userRepository.findById(shareDTO.getUserId());
         if (optUsersToShareWith.isEmpty()) {
-            throw new UserNotFoundException(shareDTO.getEmail());
+            throw new UserNotFoundException(shareDTO.getUserId());
         }
 
         Users usersToShareWith = optUsersToShareWith.get();

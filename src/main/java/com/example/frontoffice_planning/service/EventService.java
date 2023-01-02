@@ -64,16 +64,16 @@ public class EventService {
 
     public List<EventDTO> getEventsByPlanningIdShared(ShareDTO shareDTO, Users users) throws PlanningNotFoundException, UserNotMatchShareRequest, UserNotFoundException, ShareNotFoundException {
 
-        if (!Objects.equals(shareDTO.getEmail(), users.getEmail())) {
+        if (!Objects.equals(shareDTO.getUserId(), users.getIdUser())) {
             throw new UserNotMatchShareRequest();
         }
 
         Planning planning = planningService.getPlanningById(shareDTO.getPlanningId());
 
-        Optional<Users> optUser = userService.getUserByEmail(shareDTO.getEmail());
+        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
 
         if (optUser.isEmpty()) {
-            throw new UserNotFoundException(shareDTO.getEmail());
+            throw new UserNotFoundException(shareDTO.getUserId());
         }
 
         Share share = shareService.getShareByPlanningAndUser(planning, optUser.get());
