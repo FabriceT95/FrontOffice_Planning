@@ -3,7 +3,7 @@ package com.example.frontoffice_planning.service;
 import com.example.frontoffice_planning.controller.exception.*;
 import com.example.frontoffice_planning.controller.models.ActionDTO;
 import com.example.frontoffice_planning.controller.models.EventDTO;
-import com.example.frontoffice_planning.controller.models.ShareDTO;
+import com.example.frontoffice_planning.controller.models.Share.ShareDTO;
 import com.example.frontoffice_planning.entity.Event;
 import com.example.frontoffice_planning.entity.Planning;
 import com.example.frontoffice_planning.entity.Share;

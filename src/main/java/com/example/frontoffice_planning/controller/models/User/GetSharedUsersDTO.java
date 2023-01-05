@@ -1,4 +1,4 @@
-package com.example.frontoffice_planning.controller.models;
+package com.example.frontoffice_planning.controller.models.User;
 
 import jakarta.validation.constraints.NotNull;
 

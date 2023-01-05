@@ -1,5 +1,7 @@
-package com.example.frontoffice_planning.controller.models;
+package com.example.frontoffice_planning.controller.models.User;
 
+import com.example.frontoffice_planning.controller.models.AddressDTO;
+import com.example.frontoffice_planning.controller.models.RoleDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

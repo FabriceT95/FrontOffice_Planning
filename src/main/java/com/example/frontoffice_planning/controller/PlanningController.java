@@ -3,6 +3,11 @@ package com.example.frontoffice_planning.controller;
 
 import com.example.frontoffice_planning.controller.exception.*;
 import com.example.frontoffice_planning.controller.models.*;
+import com.example.frontoffice_planning.controller.models.Planning.GetSharedPlanningDTO;
+import com.example.frontoffice_planning.controller.models.Planning.PlanningDTO;
+import com.example.frontoffice_planning.controller.models.Share.ShareDTO;
+import com.example.frontoffice_planning.controller.models.Share.setNewShareDTO;
+import com.example.frontoffice_planning.controller.models.User.UsersDTO;
 import com.example.frontoffice_planning.entity.*;
 import com.example.frontoffice_planning.service.EventService;
 import com.example.frontoffice_planning.service.PlanningService;
@@ -65,9 +70,12 @@ public class PlanningController {
      * @return PlanningDTO Planning object with all tasks and basic attributes
      */
     @GetMapping("/planning/shared")
-    public ResponseEntity<PlanningDTO> getPlanningByIdShare(@RequestAttribute("user") Users users, @Valid @RequestBody ShareDTO shareDTO) {
+    public ResponseEntity<PlanningDTO> getPlanningByIdShare(@RequestAttribute("user") Users users, @RequestParam("idUser") long idUser, @RequestParam("idPlanning") long idPlanning) {
         try {
-            PlanningDTO planningDTO = planningService.getPlanningShared(shareDTO, users);
+            GetSharedPlanningDTO getSharedPlanningDTO = new GetSharedPlanningDTO();
+            getSharedPlanningDTO.setIdPlanning(idPlanning);
+            getSharedPlanningDTO.setIdUser(idUser);
+            PlanningDTO planningDTO = planningService.getPlanningShared(getSharedPlanningDTO, users);
             return ResponseEntity.status(HttpStatus.OK).body(planningDTO);
         } catch (ShareNotFoundException | UserNotMatchShareRequest e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -176,7 +184,7 @@ public class PlanningController {
      * @return PlanningDTO Planning object with all tasks and basic attributes + updated list of share if success
      */
     @DeleteMapping("/share")
-    public ResponseEntity<PlanningDTO> deleteShareFromPlanning(@RequestParam("id") long id, @RequestParam("idUser") long idUser, @RequestAttribute("user") Users users) {
+    public ResponseEntity<PlanningDTO> deleteShareFromPlanning(@RequestParam(name = "id") long id, @RequestParam(name = "idUser") long idUser, @RequestAttribute("user") Users users) {
         try {
             ShareDTO shareDTO = new ShareDTO();
             shareDTO.setPlanningId(id);

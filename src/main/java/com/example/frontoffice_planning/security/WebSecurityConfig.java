@@ -45,6 +45,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/auth/**").permitAll()
+//                        .requestMatchers("/api/images/**").permitAll()
                         .anyRequest().authenticated());
 
         httpSecurity.addFilterBefore(authenticationJwtFilter(), UsernamePasswordAuthenticationFilter.class);

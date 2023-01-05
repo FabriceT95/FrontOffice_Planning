@@ -57,7 +57,7 @@ public class Users implements UserDetails {
     private Planning planning;
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Share> share = new ArrayList<>();
+    private Set<Share> share = new HashSet<>();
 
     @OneToMany(mappedBy = "users")
     private List<Event> events = new ArrayList<>();
@@ -234,16 +234,20 @@ public class Users implements UserDetails {
         isActivated = activated;
     }
 
-    public List<Share> getShare() {
+    public Set<Share> getShare() {
         return share;
     }
 
-    public void setShare(List<Share> share) {
+    public void setShare(Set<Share> share) {
         this.share = share;
     }
 
     public void addShare(Share newShare) {
         this.share.add(newShare);
+    }
+
+    public void removeShare(Share share) {
+        this.share.remove(share);
     }
 
     @Override

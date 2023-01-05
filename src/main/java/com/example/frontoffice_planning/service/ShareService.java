@@ -1,8 +1,8 @@
 package com.example.frontoffice_planning.service;
 
 import com.example.frontoffice_planning.controller.exception.*;
-import com.example.frontoffice_planning.controller.models.ShareDTO;
-import com.example.frontoffice_planning.controller.models.setNewShareDTO;
+import com.example.frontoffice_planning.controller.models.Share.ShareDTO;
+import com.example.frontoffice_planning.controller.models.Share.setNewShareDTO;
 import com.example.frontoffice_planning.entity.Planning;
 import com.example.frontoffice_planning.entity.Share;
 import com.example.frontoffice_planning.entity.ShareId;
@@ -99,6 +99,13 @@ public class ShareService {
         share = save(share);
         System.out.println("Share has been saved");
 
+        usersToShareWith.addShare(share);
+        planning.addShare(share);
+
+        userRepository.save(usersToShareWith);
+        planningRepository.save(planning);
+
+
         ShareDTO shareDTO = new ShareDTO();
         shareDTO.setUserId(share.getUsers().getIdUser());
         shareDTO.setPlanningId(share.getPlanning().getIdPlanning());
@@ -116,9 +123,9 @@ public class ShareService {
             throw new PlanningNotFoundException(shareDTO.getPlanningId());
         }
         Planning planning = optPlanning.get();
-        if (!Objects.equals(planning.getUser().getEmail(), users.getEmail())) {
+       /* if (!Objects.equals(planning.getUser().getEmail(), users.getEmail())) {
             throw new UserNotOwnerException(users.getUsername(), planning.getNamePlanning());
-        }
+        }*/
 
         Optional<Users> optUsersToShareWith = userRepository.findById(shareDTO.getUserId());
         if (optUsersToShareWith.isEmpty()) {
@@ -127,7 +134,14 @@ public class ShareService {
 
         Users usersToShareWith = optUsersToShareWith.get();
 
-        delete(getShareByPlanningAndUser(planning, usersToShareWith));
+        Share share = getShareByPlanningAndUser(planning, usersToShareWith);
+
+        usersToShareWith.removeShare(share);
+        planning.removeShare(share);
+        delete(share);
+        userRepository.save(usersToShareWith);
+        planningRepository.save(planning);
+
         System.out.println("Share has been deleted");
 
     }
@@ -151,7 +165,7 @@ public class ShareService {
         Users usersToShareWith = optUsersToShareWith.get();
 
         Share share = getShareByPlanningAndUser(planning, usersToShareWith);
-        share.setIsReadOnly(shareDTO.isReadOnly());
+        share.setIsReadOnly(!share.getIsReadOnly());
         save(share);
         System.out.println("Share has been updated");
 

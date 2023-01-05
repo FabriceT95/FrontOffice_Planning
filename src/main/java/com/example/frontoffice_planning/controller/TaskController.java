@@ -1,7 +1,7 @@
 package com.example.frontoffice_planning.controller;
 
 import com.example.frontoffice_planning.controller.exception.*;
-import com.example.frontoffice_planning.controller.models.ShareDTO;
+import com.example.frontoffice_planning.controller.models.Share.ShareDTO;
 import com.example.frontoffice_planning.controller.models.TaskDTO;
 import com.example.frontoffice_planning.entity.*;
 import com.example.frontoffice_planning.repository.TaskRepository;

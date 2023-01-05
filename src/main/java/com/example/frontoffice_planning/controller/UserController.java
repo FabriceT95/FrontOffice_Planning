@@ -1,12 +1,12 @@
 package com.example.frontoffice_planning.controller;
 
-import com.example.frontoffice_planning.controller.exception.PlanningNotFoundException;
-import com.example.frontoffice_planning.controller.exception.ShareNotFoundException;
-import com.example.frontoffice_planning.controller.exception.UserNotFoundException;
-import com.example.frontoffice_planning.controller.exception.UserNotOwnerException;
-import com.example.frontoffice_planning.controller.models.GetSharedUsersDTO;
-import com.example.frontoffice_planning.controller.models.UsersDTO;
+import com.example.frontoffice_planning.controller.exception.*;
+import com.example.frontoffice_planning.controller.models.User.GetSharedUsersDTO;
+import com.example.frontoffice_planning.controller.models.Share.SharedUsersDTO;
+import com.example.frontoffice_planning.controller.models.User.UpdateUserDTO;
+import com.example.frontoffice_planning.controller.models.User.UsersDTO;
 import com.example.frontoffice_planning.entity.Users;
+import com.example.frontoffice_planning.service.File.StorageService;
 import com.example.frontoffice_planning.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 
 @RestController
@@ -38,6 +37,24 @@ public class UserController {
     public ResponseEntity<UsersDTO> getUser(@RequestAttribute("user") Users users) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getLoggedUser(users));
     }
+
+//    @PostMapping("/users/upload")
+//    public ResponseEntity<Resource> handleFileUpload(@RequestAttribute("user") Users users, @RequestParam("file") MultipartFile file) throws IOException {
+//        storageService.store(file);
+//        Resource fileReturn = storageService.loadAsResource(file.getOriginalFilename());
+//        userService.savePhoto(users, fileReturn.getFilename());
+//        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.CONTENT_DISPOSITION,
+//                "attachment; filename=\"" + file.getName() + "\"").body(fileReturn);
+//    }
+//
+//    @GetMapping("/users/files/{filename}")
+//    @ResponseBody
+//    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+//
+//        Resource file = storageService.loadAsResource(filename);
+//        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.CONTENT_DISPOSITION,
+//                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+//    }
 
     /**
      * Getting any user by his ID. Auth filter only allows authenticated users to get there
@@ -91,9 +108,9 @@ public class UserController {
     }
 
     @PostMapping("/users/shared")
-    public ResponseEntity<List<UsersDTO>> getSharedUsers(@RequestAttribute("user") Users users, @Valid @RequestBody GetSharedUsersDTO getSharedUsersDTO) {
+    public ResponseEntity<List<SharedUsersDTO>> getSharedUsers(@RequestAttribute("user") Users users, @Valid @RequestBody GetSharedUsersDTO getSharedUsersDTO) {
         try {
-            List<UsersDTO> usersDTOList = userService.getSharedUsers(getSharedUsersDTO, users);
+            List<SharedUsersDTO> usersDTOList = userService.getSharedUsers(getSharedUsersDTO, users);
             return ResponseEntity.status(HttpStatus.OK).body(usersDTOList);
         } catch (ShareNotFoundException | UserNotOwnerException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -110,14 +127,21 @@ public class UserController {
      * @return UserDTO updated, simple representation of a User
      */
     @PutMapping("/users")
-    public ResponseEntity<UsersDTO> updateUser(@Valid @RequestBody UsersDTO usersDTO) {
+    public ResponseEntity<UsersDTO> updateUser(@RequestAttribute("user") Users users, @Valid @RequestBody UpdateUserDTO updateUserDTO) {
         try {
-            userService.updateUser(usersDTO);
+            UsersDTO usersDTO = userService.updateUser(users, updateUserDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(usersDTO);
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (UserUpdateDeniedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(usersDTO);
     }
+
+//    @ExceptionHandler(StorageFileNotFoundException.class)
+//    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+//        return ResponseEntity.notFound().build();
+//    }
 
 
 }

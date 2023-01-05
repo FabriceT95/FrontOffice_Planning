@@ -1,10 +1,11 @@
 package com.example.frontoffice_planning.service;
 
 import com.example.frontoffice_planning.controller.exception.*;
-import com.example.frontoffice_planning.controller.models.PlanningDTO;
-import com.example.frontoffice_planning.controller.models.ShareDTO;
-import com.example.frontoffice_planning.controller.models.TaskDTO;
-import com.example.frontoffice_planning.controller.models.UsersDTO;
+import com.example.frontoffice_planning.controller.models.*;
+import com.example.frontoffice_planning.controller.models.Planning.GetSharedPlanningDTO;
+import com.example.frontoffice_planning.controller.models.Planning.PlanningDTO;
+import com.example.frontoffice_planning.controller.models.Share.ShareDTO;
+import com.example.frontoffice_planning.controller.models.User.UsersDTO;
 import com.example.frontoffice_planning.entity.Planning;
 import com.example.frontoffice_planning.entity.Share;
 import com.example.frontoffice_planning.entity.Task;
@@ -95,17 +96,17 @@ public class PlanningService {
 
     }
 
-    public PlanningDTO getPlanningShared(ShareDTO shareDTO, Users users) throws PlanningNotFoundException, UserNotFoundException, ShareNotFoundException, UserNotMatchShareRequest {
+    public PlanningDTO getPlanningShared(GetSharedPlanningDTO getSharedPlanningDTO, Users users) throws PlanningNotFoundException, UserNotFoundException, ShareNotFoundException, UserNotMatchShareRequest {
 
-        if (!Objects.equals(shareDTO.getUserId(), users.getIdUser())) {
+        if (!Objects.equals(getSharedPlanningDTO.getIdUser(), users.getIdUser())) {
             throw new UserNotMatchShareRequest();
         }
 
-        Planning planning = getPlanningById(shareDTO.getPlanningId());
-        Optional<Users> optUser = userService.getUserById(shareDTO.getUserId());
+        Planning planning = getPlanningById(getSharedPlanningDTO.getIdPlanning());
+        Optional<Users> optUser = userService.getUserById(getSharedPlanningDTO.getIdUser());
 
         if (optUser.isEmpty()) {
-            throw new UserNotFoundException(shareDTO.getUserId());
+            throw new UserNotFoundException(getSharedPlanningDTO.getIdUser());
         }
 
         Share share = shareService.getShareByPlanningAndUser(planning, optUser.get());

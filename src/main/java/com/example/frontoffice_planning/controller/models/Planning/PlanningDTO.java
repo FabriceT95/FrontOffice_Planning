@@ -1,6 +1,8 @@
-package com.example.frontoffice_planning.controller.models;
+package com.example.frontoffice_planning.controller.models.Planning;
 
-import jakarta.validation.constraints.NotEmpty;
+import com.example.frontoffice_planning.controller.models.Share.ShareDTO;
+import com.example.frontoffice_planning.controller.models.TaskDTO;
+import com.example.frontoffice_planning.controller.models.User.UsersDTO;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;

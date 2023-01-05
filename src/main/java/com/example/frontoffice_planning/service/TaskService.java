@@ -3,7 +3,7 @@ package com.example.frontoffice_planning.service;
 import com.example.frontoffice_planning.controller.exception.*;
 import com.example.frontoffice_planning.controller.models.ActionDTO;
 import com.example.frontoffice_planning.controller.models.EventDTO;
-import com.example.frontoffice_planning.controller.models.ShareDTO;
+import com.example.frontoffice_planning.controller.models.Share.ShareDTO;
 import com.example.frontoffice_planning.controller.models.TaskDTO;
 import com.example.frontoffice_planning.entity.*;
 import com.example.frontoffice_planning.repository.ActionRepository;
@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
