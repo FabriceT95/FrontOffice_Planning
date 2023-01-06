@@ -38,24 +38,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getLoggedUser(users));
     }
 
-//    @PostMapping("/users/upload")
-//    public ResponseEntity<Resource> handleFileUpload(@RequestAttribute("user") Users users, @RequestParam("file") MultipartFile file) throws IOException {
-//        storageService.store(file);
-//        Resource fileReturn = storageService.loadAsResource(file.getOriginalFilename());
-//        userService.savePhoto(users, fileReturn.getFilename());
-//        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.CONTENT_DISPOSITION,
-//                "attachment; filename=\"" + file.getName() + "\"").body(fileReturn);
-//    }
-//
-//    @GetMapping("/users/files/{filename}")
-//    @ResponseBody
-//    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-//
-//        Resource file = storageService.loadAsResource(filename);
-//        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.CONTENT_DISPOSITION,
-//                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-//    }
-
     /**
      * Getting any user by his ID. Auth filter only allows authenticated users to get there
      *

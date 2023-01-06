@@ -95,7 +95,7 @@ public class ShareService {
 
         shareNotExist(planning, usersToShareWith);
 
-        Share share = new Share(new ShareId(usersToShareWith.getIdUser(), planning.getIdPlanning()), planning, usersToShareWith, newShareDTO.isReadOnly());
+        Share share = new Share(new ShareId(usersToShareWith.getIdUser(), planning.getIdPlanning()), planning, usersToShareWith, true);
         share = save(share);
         System.out.println("Share has been saved");
 

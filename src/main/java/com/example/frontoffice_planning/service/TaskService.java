@@ -118,11 +118,11 @@ public class TaskService {
         return taskDTO;
     }
 
-    public TaskDTO getTaskDTOByIdShared(long id, ShareDTO shareDTO, Users users) throws TaskNotFoundException, PlanningNotFoundException, UserNotFoundException, ShareNotFoundException {
+    public TaskDTO getTaskDTOByIdShared(long id, long idPlanning, long idUser, Users users) throws TaskNotFoundException, PlanningNotFoundException, UserNotFoundException, ShareNotFoundException {
 
-        Planning planning = planningService.getPlanningById(shareDTO.getPlanningId());
-        Optional<Users> optUsers = userService.getUserById(shareDTO.getUserId());
-        if (optUsers.isEmpty()) throw new UserNotFoundException(shareDTO.getUserId());
+        Planning planning = planningService.getPlanningById(idPlanning);
+        Optional<Users> optUsers = userService.getUserById(idUser);
+        if (optUsers.isEmpty()) throw new UserNotFoundException(idUser);
         shareService.shareExists(planning, users);
 
         Optional<Task> searchedTask = taskRepository.findById(id);
@@ -230,14 +230,14 @@ public class TaskService {
     }
 
     @Transactional
-    public void deleteShared(long id, ShareDTO shareDTO, Users users) throws TaskNotFoundException, UserNotFoundException, PlanningNotFoundException, ShareNotFoundException, ShareReadOnlyException {
+    public void deleteShared(long id, long idPlanning, long idUser, Users users) throws TaskNotFoundException, UserNotFoundException, PlanningNotFoundException, ShareNotFoundException, ShareReadOnlyException {
 
         Optional<Users> optUsers = userService.getUserById(users.getIdUser());
         if (optUsers.isEmpty()) {
             throw new UserNotFoundException(users.getIdUser());
         }
 
-        Planning planning = planningService.getPlanningById(shareDTO.getPlanningId());
+        Planning planning = planningService.getPlanningById(idPlanning);
         shareService.shareExists(planning, users);
         shareService.isFullAccess(planning, users);
         Optional<Task> taskToDelete = taskRepository.findById(id);
@@ -247,6 +247,6 @@ public class TaskService {
 
         taskRepository.delete(taskToDelete.get());
 
-        System.out.println("Task " + id + " from shared Planning " + shareDTO.getPlanningId() + " has been deleted");
+        System.out.println("Task " + id + " from shared Planning " + idPlanning + " has been deleted");
     }
 }

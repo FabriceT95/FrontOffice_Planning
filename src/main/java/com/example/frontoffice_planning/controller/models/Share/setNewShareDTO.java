@@ -9,9 +9,6 @@ public class setNewShareDTO {
     @NotNull(message = "New Share DTO must have an email")
     private String email;
 
-    @NotNull(message = "Share DTO must have a boolean isReadOnly")
-    private boolean isReadOnly;
-
     public setNewShareDTO() {
     }
 
@@ -29,13 +26,5 @@ public class setNewShareDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public boolean isReadOnly() {
-        return isReadOnly;
-    }
-
-    public void setReadOnly(boolean readOnly) {
-        isReadOnly = readOnly;
     }
 }

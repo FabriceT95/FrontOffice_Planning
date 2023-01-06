@@ -56,15 +56,15 @@ public class TaskController {
     }
 
     /**
-     * @param users  Getting authenticated user from the auth filter
-     * @param idTask Task id user is looking for
+     * @param users    Getting authenticated user from the auth filter
+     * @param idTask   Task id user is looking for
      * @param shareDTO key object attesting sharing request
      * @return taskDTO with ID if success, otherwise returns an error
      */
     @GetMapping("/task/shared/{id}")
-    public ResponseEntity<TaskDTO> getTaskByIdShared(@RequestAttribute("user") Users users, @PathVariable("id") long idTask, @RequestBody ShareDTO shareDTO) {
+    public ResponseEntity<TaskDTO> getTaskByIdShared(@RequestAttribute("user") Users users, @PathVariable("id") long idTask, @RequestParam("idUser") long idUser, @RequestParam("idPlanning") long idPlanning) {
         try {
-            TaskDTO taskDTO = taskService.getTaskDTOByIdShared(idTask, shareDTO, users);
+            TaskDTO taskDTO = taskService.getTaskDTOByIdShared(idTask, idPlanning, idUser, users);
             return ResponseEntity.status(HttpStatus.OK).body(taskDTO);
         } catch (TaskNotFoundException | PlanningNotFoundException | UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -190,16 +190,16 @@ public class TaskController {
     /**
      * Delete a Shared Task based on ID
      *
-     * @param id task id to delete
+     * @param id       task id to delete
      * @param shareDTO key object attesting sharing request
-     * @param users Getting authenticated user from the auth filter
+     * @param users    Getting authenticated user from the auth filter
      * @return HttpStatus success or not found
      */
     @DeleteMapping("/task/shared/delete/{id}")
-    public ResponseEntity<HttpStatus> deleteTaskShared(@RequestAttribute("user") Users users, @RequestBody ShareDTO shareDTO, @PathVariable("id") long id) {
+    public ResponseEntity<HttpStatus> deleteTaskShared(@RequestAttribute("user") Users users, @PathVariable("id") long id, @RequestParam("idUser") long idUser, @RequestParam("idPlanning") long idPlanning) {
 
         try {
-            taskService.deleteShared(id, shareDTO, users);
+            taskService.deleteShared(id, idPlanning, idUser, users);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (UserNotFoundException | TaskNotFoundException | PlanningNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
