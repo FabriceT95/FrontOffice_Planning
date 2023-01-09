@@ -58,7 +58,7 @@ public class Planning {
     }
 
 
-    @OneToMany(mappedBy = "planning", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "planning", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
     private Set<Share> share = new HashSet<>();
 
 

@@ -8,6 +8,7 @@ import com.example.frontoffice_planning.controller.models.User.UpdateUserDTO;
 import com.example.frontoffice_planning.controller.models.User.UsersDTO;
 import com.example.frontoffice_planning.entity.Address;
 import com.example.frontoffice_planning.entity.Planning;
+import com.example.frontoffice_planning.entity.Share;
 import com.example.frontoffice_planning.entity.Users;
 import com.example.frontoffice_planning.repository.PlanningRepository;
 import com.example.frontoffice_planning.repository.RoleRepository;
@@ -17,6 +18,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -263,5 +265,26 @@ public class UserService {
             throw new UserNotOwnerException(users.getEmail(), planning.getNamePlanning());
         }
         return true;
+    }
+
+    @Transactional
+    public boolean deleteUserById(long id) throws UserNotFoundException, ShareNotFoundException {
+        Optional<Users> optUserToDelete = userRepository.findById(id);
+        if (optUserToDelete.isPresent()) {
+            Users userToDelete = optUserToDelete.get();
+            Planning userPlanning = userToDelete.getPlanning();
+            for (Share share : userPlanning.getShare()) {
+                if (share != null) {
+                    share.getUsers().removeShare(share);
+                    shareRepository.delete(share);
+                } else {
+                    throw new ShareNotFoundException(userToDelete.getEmail(), userPlanning.getIdPlanning());
+                }
+            }
+            userRepository.delete(optUserToDelete.get());
+            return true;
+        } else {
+            throw new UserNotFoundException(id);
+        }
     }
 }

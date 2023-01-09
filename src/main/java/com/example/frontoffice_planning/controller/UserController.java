@@ -6,7 +6,6 @@ import com.example.frontoffice_planning.controller.models.Share.SharedUsersDTO;
 import com.example.frontoffice_planning.controller.models.User.UpdateUserDTO;
 import com.example.frontoffice_planning.controller.models.User.UsersDTO;
 import com.example.frontoffice_planning.entity.Users;
-import com.example.frontoffice_planning.service.File.StorageService;
 import com.example.frontoffice_planning.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -105,7 +104,7 @@ public class UserController {
     /**
      * Authenticated user updating his profile. Auth filter only allows authenticated users to get there
      *
-     * @param usersDTO simple representation of a User with updated data to apply on a User entity
+     * @param updateUserDTO simple representation of a User with updated data to apply on a User entity
      * @return UserDTO updated, simple representation of a User
      */
     @PutMapping("/users")
@@ -120,10 +119,19 @@ public class UserController {
         }
     }
 
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Boolean> deleteUserById(@PathVariable long id) {
+        try {
+            Boolean result = userService.deleteUserById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        } catch (UserNotFoundException | ShareNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
 //    @ExceptionHandler(StorageFileNotFoundException.class)
 //    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
 //        return ResponseEntity.notFound().build();
 //    }
-
 
 }

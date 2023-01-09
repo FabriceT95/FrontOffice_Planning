@@ -15,6 +15,5 @@ public interface ShareRepository extends JpaRepository<Share, Long> {
 
     boolean existsShareByPlanningAndUsers(Planning planning, Users users);
 
-
     List<Share> findAllByUsers(Users users);
 }
