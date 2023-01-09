@@ -1,12 +1,15 @@
 package com.example.frontoffice_planning.controller;
 
-import com.example.frontoffice_planning.controller.exception.*;
+import com.example.frontoffice_planning.controller.exception.planning.PlanningNotFoundException;
+import com.example.frontoffice_planning.controller.exception.share.ShareNotFoundException;
+import com.example.frontoffice_planning.controller.exception.user.UserNotFoundException;
+import com.example.frontoffice_planning.controller.exception.user.UserNotOwnerException;
+import com.example.frontoffice_planning.controller.exception.user.UserUpdateDeniedException;
 import com.example.frontoffice_planning.controller.models.User.GetSharedUsersDTO;
 import com.example.frontoffice_planning.controller.models.Share.SharedUsersDTO;
 import com.example.frontoffice_planning.controller.models.User.UpdateUserDTO;
 import com.example.frontoffice_planning.controller.models.User.UsersDTO;
 import com.example.frontoffice_planning.entity.Users;
-import com.example.frontoffice_planning.service.File.StorageService;
 import com.example.frontoffice_planning.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -45,12 +48,12 @@ public class UserController {
      * @return UserDTO, simple representation of a User
      */
     @GetMapping("/users/id/{id}")
-    public ResponseEntity<UsersDTO> getUserById(@PathVariable("id") long id) {
+    public ResponseEntity<UsersDTO> getUserById(@PathVariable("id") long id) throws UserNotFoundException {
         try {
             UsersDTO usersDTO = userService.getUserDTOById(id);
             return ResponseEntity.status(HttpStatus.OK).body(usersDTO);
         } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new UserNotFoundException(id);
         }
 
     }

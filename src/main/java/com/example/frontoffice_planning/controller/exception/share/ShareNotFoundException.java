@@ -1,4 +1,4 @@
-package com.example.frontoffice_planning.controller.exception;
+package com.example.frontoffice_planning.controller.exception.share;
 
 public class ShareNotFoundException extends Exception {
     public ShareNotFoundException(String email, long planningId) {

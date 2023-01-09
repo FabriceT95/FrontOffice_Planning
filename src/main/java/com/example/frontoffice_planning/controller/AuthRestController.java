@@ -1,6 +1,6 @@
 package com.example.frontoffice_planning.controller;
 
-import com.example.frontoffice_planning.controller.exception.UserAlreadyExistException;
+import com.example.frontoffice_planning.controller.exception.user.UserAlreadyExistException;
 import com.example.frontoffice_planning.controller.models.SigninRequest;
 import com.example.frontoffice_planning.controller.models.SignupRequest;
 import com.example.frontoffice_planning.entity.Users;
@@ -15,8 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @CrossOrigin("http://localhost:4200")
