@@ -1,4 +1,4 @@
-package com.example.frontoffice_planning.controller.exception;
+package com.example.frontoffice_planning.controller.exception.storage;
 
 public class StorageFileNotFoundException extends StorageException {
 

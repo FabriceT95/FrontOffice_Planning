@@ -1,7 +1,7 @@
 package com.example.frontoffice_planning.service.File;
 
-import com.example.frontoffice_planning.controller.exception.StorageException;
-import com.example.frontoffice_planning.controller.exception.StorageFileNotFoundException;
+import com.example.frontoffice_planning.controller.exception.storage.StorageException;
+import com.example.frontoffice_planning.controller.exception.storage.StorageFileNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

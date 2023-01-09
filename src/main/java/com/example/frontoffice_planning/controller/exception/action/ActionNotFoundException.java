@@ -1,4 +1,4 @@
-package com.example.frontoffice_planning.controller.exception;
+package com.example.frontoffice_planning.controller.exception.action;
 
 public class ActionNotFoundException extends Exception {
     public ActionNotFoundException(String actionname) {

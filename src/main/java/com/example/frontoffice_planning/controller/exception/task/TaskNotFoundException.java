@@ -1,4 +1,4 @@
-package com.example.frontoffice_planning.controller.exception;
+package com.example.frontoffice_planning.controller.exception.task;
 
 public class TaskNotFoundException extends Exception {
     public TaskNotFoundException(String taskname) {

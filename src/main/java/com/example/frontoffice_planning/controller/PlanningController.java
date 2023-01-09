@@ -1,7 +1,13 @@
 package com.example.frontoffice_planning.controller;
 
 
-import com.example.frontoffice_planning.controller.exception.*;
+import com.example.frontoffice_planning.controller.exception.planning.PlanningNotFoundException;
+import com.example.frontoffice_planning.controller.exception.share.ShareAlreadyExistsException;
+import com.example.frontoffice_planning.controller.exception.share.ShareNotFoundException;
+import com.example.frontoffice_planning.controller.exception.share.ShareReadOnlyException;
+import com.example.frontoffice_planning.controller.exception.user.UserNotFoundException;
+import com.example.frontoffice_planning.controller.exception.user.UserNotMatchShareRequest;
+import com.example.frontoffice_planning.controller.exception.user.UserNotOwnerException;
 import com.example.frontoffice_planning.controller.models.*;
 import com.example.frontoffice_planning.controller.models.Planning.GetSharedPlanningDTO;
 import com.example.frontoffice_planning.controller.models.Planning.PlanningDTO;
@@ -46,12 +52,13 @@ public class PlanningController {
      * @return planningDTO Planning object with all tasks and basic attributes
      */
     @GetMapping("/planning")
-    public ResponseEntity<PlanningDTO> getPlanningOwner(@RequestAttribute("user") Users users) {
+    public ResponseEntity<PlanningDTO> getPlanningOwner(@RequestAttribute("user") Users users) throws PlanningNotFoundException {
         try {
             PlanningDTO planningDTO = planningService.getPlanningByOwner(users);
             return ResponseEntity.status(HttpStatus.OK).body(planningDTO);
         } catch (PlanningNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new PlanningNotFoundException(users.getPlanning().getIdPlanning());
+          //  return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
     }
@@ -138,20 +145,23 @@ public class PlanningController {
      * @return PlanningDTO Planning object with all tasks and basic attributes + updated list of share if success
      */
     @PostMapping("/share")
-    public ResponseEntity<ShareDTO> addNewShareToPlanning(@RequestAttribute("user") Users users, @Valid @RequestBody setNewShareDTO newShareDTO) {
+    public ResponseEntity<ShareDTO> addNewShareToPlanning(@RequestAttribute("user") Users users, @Valid @RequestBody setNewShareDTO newShareDTO) throws UserNotOwnerException, ShareAlreadyExistsException, UserNotFoundException, PlanningNotFoundException {
         try {
             ShareDTO shareDTO = shareService.createShare(newShareDTO, users);
             return ResponseEntity.status(HttpStatus.OK).body(shareDTO);
-            /*  return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("message is here", HttpStatus.UNAUTHORIZED));*/
         } catch (UserNotOwnerException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new UserNotOwnerException(users.getUsername(), newShareDTO.getPlanningId());
+         //   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (ShareAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (PlanningNotFoundException | UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            throw new ShareAlreadyExistsException(newShareDTO.getEmail(), newShareDTO.getPlanningId());
+         //   return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException(newShareDTO.getEmail());
+         //   return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (PlanningNotFoundException e) {
+            throw new PlanningNotFoundException(newShareDTO.getPlanningId());
         }
     }
-
     /**
      * Allows the owner to update an existing share from his planning.
      * readOnly boolean will be set => true = read only, false = all
