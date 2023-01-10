@@ -27,12 +27,14 @@ This project is a part of a collaborative agenda application as an end of format
   
 ## Start Project [↑](#frontoffice_planning)
 
-  Set 
+  **Set** 
    * port to 8080
    * a string for jwt.utils.secret
    * a number for jwt.utils.expiration.duration in ms
    * put the access to your database  in src/main/resources/application.properties
-   Install and add maven to environment, navigate to the root of the project via command line and execute the command `mvn spring-boot:run`
+  
+  **Maven**
+   Install and add maven to environment, navigate to the root of the project and execute the command `mvn spring-boot:run`
 
 ## Contributor [↑](#frontoffice_planning)
 
