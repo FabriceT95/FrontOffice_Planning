@@ -10,6 +10,7 @@ This project is a part of a collaborative agenda application as an end of format
   * [Technologies](#technologies)
   * [Features](#features)
   * [Start Project](#start-project)
+  * [Contributors](#contributor)
   
 ## Technologies [↑](#frontoffice_planning)
 
