@@ -34,8 +34,7 @@ This project is a part of a collaborative agenda application as an end of format
    * a number for jwt.utils.expiration.duration in ms
    * put the access to your database  in src/main/resources/application.properties
   
-  **Maven**
-   Install and add maven to environment, navigate to the root of the project and execute the command `mvn spring-boot:run`
+  **Maven** - Install and add maven to environment, navigate to the root of the project and execute the command `mvn spring-boot:run`
 
 ## Contributor [↑](#frontoffice_planning)
 
