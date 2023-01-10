@@ -11,13 +11,13 @@ This project is a part of a collaborative agenda application as an end of format
   * [Features](#features)
   * [Start Project](#start-project)
   
-## Technologies
+## Technologies [↑](#frontoffice_planning)
 
   * <img width=50px src="https://blog.talanlabs.com/microservices-partie-4-spring-boot/cover.png" alt="spring-icon"> [Spring Boot](https://spring.io/projects/spring-boot)
   * <img width=50px src="https://cdn.freebiesupply.com/logos/large/2x/hibernate-logo-png-transparent.png" alt="hibernate-icon"> [Hibernate](https://hibernate.org/)
   * <img width=50px src="https://cdn-icons-png.flaticon.com/512/5968/5968313.png" alt="mysql-icon"> [MySQL](https://www.mysql.com/)
 
-## Features
+## Features [↑](#frontoffice_planning)
 
 **Writting and Reading** - Writing and reading of :
   * planning
@@ -25,6 +25,16 @@ This project is a part of a collaborative agenda application as an end of format
   * task
   * sharing of planning
   
-## Start Project
+## Start Project [↑](#frontoffice_planning)
 
-  Set port to 8080, chose a string for jwt.utils.secret, a duration for jwt.utils.expiration.duration in ms and put the access to your database  in src/main/resources/application.properties. Install and add maven to environment, navigate to the root of the project via command line and execute the command `mvn spring-boot:run`
+  Set 
+   * port to 8080
+   * a string for jwt.utils.secret
+   * a number for jwt.utils.expiration.duration in ms
+   * put the access to your database  in src/main/resources/application.properties
+   Install and add maven to environment, navigate to the root of the project via command line and execute the command `mvn spring-boot:run`
+
+## Contributor [↑](#frontoffice_planning)
+
+* @[FabriceT95](https://github.com/FabriceT95)
+* @[Scralblacks](https://github.com/Scralblacks)
