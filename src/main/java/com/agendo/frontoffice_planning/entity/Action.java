@@ -2,6 +2,8 @@ package com.agendo.frontoffice_planning.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "action")
 public class Action {
@@ -46,7 +48,7 @@ public class Action {
         Action action = (Action) o;
 
         if (idAction != action.idAction) return false;
-        if (name != null ? !name.equals(action.name) : action.name != null) return false;
+        if (!Objects.equals(name, action.name)) return false;
 
         return true;
     }

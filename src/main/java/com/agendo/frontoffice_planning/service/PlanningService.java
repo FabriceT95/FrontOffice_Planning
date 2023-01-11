@@ -16,7 +16,6 @@ import com.agendo.frontoffice_planning.repository.PlanningRepository;
 import com.agendo.frontoffice_planning.controller.exception.planning.PlanningNotFoundException;
 import com.agendo.frontoffice_planning.controller.exception.user.UserNotFoundException;
 import com.agendo.frontoffice_planning.controller.exception.user.UserNotOwnerException;
-import com.example.frontoffice_planning.controller.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,7 +90,6 @@ public class PlanningService {
         planningDTO.setNamePlanning(planning.getNamePlanning());
         planningDTO.setDateCreated(planning.getDateCreated());
 
-        // We can retrieve everything but we don't need all here. Just few data for display purpose.
         UsersDTO usersDTO = new UsersDTO();
         usersDTO.setPlanningId(planningDTO.getIdPlanning());
         usersDTO.setIdUser(planning.getUser().getIdUser());
@@ -110,8 +108,6 @@ public class PlanningService {
             taskDTO.setDateCreated(task.getDateCreated());
             taskDTO.setDateTaskStart(task.getDateTaskStart());
             taskDTO.setDateTaskEnd(task.getDateTaskEnd());
-            // We don't need to set event list. We don't use it in the planning overview.
-            // taskDTO.setEventList();
             return taskDTO;
         }).toList();
 

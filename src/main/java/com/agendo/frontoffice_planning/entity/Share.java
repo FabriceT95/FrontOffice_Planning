@@ -76,12 +76,8 @@ public class Share {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Share share = (Share) o;
-
-      //  if (user_planning_id != share.user_planning_id) return false;
         if (isReadOnly != share.isReadOnly) return false;
-
         return true;
     }
 

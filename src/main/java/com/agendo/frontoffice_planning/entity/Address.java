@@ -2,6 +2,8 @@ package com.agendo.frontoffice_planning.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "Address")
 public class Address {
@@ -16,9 +18,6 @@ public class Address {
     @Basic
     @Column(name = "postal_code")
     private String postalCode;
-
-   /* @OneToMany(targetEntity = Users.class)
-    List<Users> usersList = new ArrayList<>();*/
 
     public Address(String city, String postalCode) {
         this.city = city;
@@ -62,9 +61,9 @@ public class Address {
 
         Address address = (Address) o;
 
-        if (idAddress != address.idAddress) return false;
-        if (city != null ? !city.equals(address.city) : address.city != null) return false;
-        if (postalCode != null ? !postalCode.equals(address.postalCode) : address.postalCode != null) return false;
+        if (!Objects.equals(idAddress, address.idAddress)) return false;
+        if (!Objects.equals(city, address.city)) return false;
+        if (!Objects.equals(postalCode, address.postalCode)) return false;
 
         return true;
     }

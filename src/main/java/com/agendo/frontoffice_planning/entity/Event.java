@@ -3,6 +3,7 @@ package com.agendo.frontoffice_planning.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 public class Event {
@@ -63,7 +64,7 @@ public class Event {
         Event event = (Event) o;
 
         if (idEvent != event.idEvent) return false;
-        if (dateCreated != null ? !dateCreated.equals(event.dateCreated) : event.dateCreated != null) return false;
+        if (!Objects.equals(dateCreated, event.dateCreated)) return false;
 
         return true;
     }

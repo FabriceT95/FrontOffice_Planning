@@ -3,12 +3,9 @@ package com.agendo.frontoffice_planning.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-@Entity(name="Planning")
+@Entity(name = "Planning")
 @Table(name = "planning")
 public class Planning {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -115,9 +112,13 @@ public class Planning {
         this.share = share;
     }
 
-    public void addShare(Share newShare){this.share.add(newShare);}
+    public void addShare(Share newShare) {
+        this.share.add(newShare);
+    }
 
-    public void removeShare(Share shareToDelete){this.share.remove(shareToDelete);}
+    public void removeShare(Share shareToDelete) {
+        this.share.remove(shareToDelete);
+    }
 
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
@@ -130,11 +131,11 @@ public class Planning {
 
         Planning planning = (Planning) o;
 
-        if (idPlanning != planning.idPlanning) return false;
-      //  if (user != planning.user) return false;
-        if (namePlanning != null ? !namePlanning.equals(planning.namePlanning) : planning.namePlanning != null)
+        if (!Objects.equals(idPlanning, planning.idPlanning)) return false;
+        if (user != planning.user) return false;
+        if (!Objects.equals(namePlanning, planning.namePlanning))
             return false;
-        if (dateCreated != null ? !dateCreated.equals(planning.dateCreated) : planning.dateCreated != null)
+        if (!Objects.equals(dateCreated, planning.dateCreated))
             return false;
 
         return true;
@@ -145,11 +146,11 @@ public class Planning {
         int result = idPlanning.intValue();
         result = 31 * result + (namePlanning != null ? namePlanning.hashCode() : 0);
         result = 31 * result + (dateCreated != null ? dateCreated.hashCode() : 0);
-      //  result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
         return result;
     }
 
-   /* @Override
+    @Override
     public String toString() {
         return "Planning{" +
                 "idPlanning=" + idPlanning +
@@ -158,5 +159,5 @@ public class Planning {
                 ", events=" + events +
                 ", tasks=" + tasks +
                 '}';
-    }*/
+    }
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Task {
@@ -92,13 +93,13 @@ public class Task {
 
         Task task = (Task) o;
 
-        if (idTask != task.idTask) return false;
-        if (nameTask != null ? !nameTask.equals(task.nameTask) : task.nameTask != null) return false;
-        if (dateCreated != null ? !dateCreated.equals(task.dateCreated) : task.dateCreated != null) return false;
-        if (dateTaskStart != null ? !dateTaskStart.equals(task.dateTaskStart) : task.dateTaskStart != null)
+        if (!Objects.equals(idTask, task.idTask)) return false;
+        if (!Objects.equals(nameTask, task.nameTask)) return false;
+        if (!Objects.equals(dateCreated, task.dateCreated)) return false;
+        if (!Objects.equals(dateTaskStart, task.dateTaskStart))
             return false;
-        if (dateTaskEnd != null ? !dateTaskEnd.equals(task.dateTaskEnd) : task.dateTaskEnd != null) return false;
-        if (description != null ? !description.equals(task.description) : task.description != null) return false;
+        if (!Objects.equals(dateTaskEnd, task.dateTaskEnd)) return false;
+        if (!Objects.equals(description, task.description)) return false;
 
         return true;
     }

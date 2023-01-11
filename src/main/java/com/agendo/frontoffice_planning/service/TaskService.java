@@ -11,7 +11,6 @@ import com.agendo.frontoffice_planning.controller.exception.user.UserNotOwnerExc
 import com.agendo.frontoffice_planning.controller.models.ActionDTO;
 import com.agendo.frontoffice_planning.controller.models.EventDTO;
 import com.agendo.frontoffice_planning.controller.models.TaskDTO;
-import com.example.frontoffice_planning.entity.*;
 import com.agendo.frontoffice_planning.repository.ActionRepository;
 import com.agendo.frontoffice_planning.repository.TaskRepository;
 import jakarta.transaction.Transactional;
@@ -108,8 +107,6 @@ public class TaskService {
         taskDTO.setDateCreated(task.getDateCreated());
         taskDTO.setDateTaskStart(task.getDateTaskStart());
         taskDTO.setDateTaskEnd(task.getDateTaskEnd());
-        // Issue : Events has a relationship with Users, Planning and Task
-        // => Each events are in three copies
         taskDTO.setEventList(task.getEventsByIdTask().stream().map(event -> {
             EventDTO eventDTO = new EventDTO();
             eventDTO.setIdPlanning(event.getPlanning().getIdPlanning());

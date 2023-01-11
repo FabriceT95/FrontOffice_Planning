@@ -18,7 +18,6 @@ import com.agendo.frontoffice_planning.controller.exception.user.UserAlreadyExis
 import com.agendo.frontoffice_planning.controller.exception.user.UserNotFoundException;
 import com.agendo.frontoffice_planning.controller.exception.user.UserNotOwnerException;
 import com.agendo.frontoffice_planning.controller.exception.user.UserUpdateDeniedException;
-import com.example.frontoffice_planning.controller.models.*;
 import com.agendo.frontoffice_planning.controller.models.Share.SharedUsersDTO;
 import com.agendo.frontoffice_planning.controller.models.User.GetSharedUsersDTO;
 import com.agendo.frontoffice_planning.controller.models.User.UpdateUserDTO;

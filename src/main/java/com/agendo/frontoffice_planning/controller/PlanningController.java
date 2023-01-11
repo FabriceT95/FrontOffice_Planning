@@ -17,9 +17,7 @@ import com.agendo.frontoffice_planning.service.ShareService;
 import com.agendo.frontoffice_planning.controller.exception.planning.PlanningNotFoundException;
 import com.agendo.frontoffice_planning.controller.exception.user.UserNotFoundException;
 import com.agendo.frontoffice_planning.controller.exception.user.UserNotOwnerException;
-import com.example.frontoffice_planning.controller.models.*;
 import com.agendo.frontoffice_planning.controller.models.Share.setNewShareDTO;
-import com.example.frontoffice_planning.entity.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -58,17 +56,13 @@ public class PlanningController {
         }
     }
 
-
-    // Maybe allowing the owner to get by this path aswell ?
-    // For now, only shared people can go this way, not the owner
-    // Owner only gets it from "UserControlle" API
-
     /**
      * Get a planning shared to a user. ShareDTO validates the share
      * Validation needs to be proven again for security purpose
      *
-     * @param shareDTO key object attesting sharing request
-     * @param users    Getting authenticated user from the auth filter
+     * @param idUser     id user requesting the GET
+     * @param idPlanning id planning requested by the user
+     * @param users      Getting authenticated user from the auth filter
      * @return PlanningDTO Planning object with all tasks and basic attributes
      */
     @GetMapping("/planning/shared")
@@ -146,17 +140,18 @@ public class PlanningController {
             return ResponseEntity.status(HttpStatus.OK).body(shareDTO);
         } catch (UserNotOwnerException e) {
             throw new UserNotOwnerException(users.getUsername(), newShareDTO.getPlanningId());
-         //   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            //   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (ShareAlreadyExistsException e) {
             throw new ShareAlreadyExistsException(newShareDTO.getEmail(), newShareDTO.getPlanningId());
-         //   return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            //   return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (UserNotFoundException e) {
             throw new UserNotFoundException(newShareDTO.getEmail());
-         //   return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            //   return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (PlanningNotFoundException e) {
             throw new PlanningNotFoundException(newShareDTO.getPlanningId());
         }
     }
+
     /**
      * Allows the owner to update an existing share from his planning.
      * readOnly boolean will be set => true = read only, false = all

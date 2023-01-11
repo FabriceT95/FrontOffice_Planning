@@ -69,7 +69,6 @@ public class AuthRestController {
         // Generate a JSON Web Token
         String generatedToken = jwtUtils.generateJwt(authentication);
 
-        // TODO: return username from Authentication SecurityContextHolder
         Users connectedUser = (Users) authentication.getPrincipal();
         JwtResponse jwtResponse = new JwtResponse(connectedUser.getEmail(), generatedToken);
 

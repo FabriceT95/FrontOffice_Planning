@@ -3,6 +3,7 @@ package com.agendo.frontoffice_planning.entity;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -20,9 +21,6 @@ public class Role {
             joinColumns = @JoinColumn( name = "id_role" ),
             inverseJoinColumns = @JoinColumn( name = "id_user" ) )
     private Set<Users> users = new HashSet<>();
-
-   /* @ManyToOne @JoinColumn(name="id_user")
-    private Users users;*/
 
     public Long getIdRole() {
         return idRole;
@@ -62,8 +60,8 @@ public class Role {
 
         Role role = (Role) o;
 
-        if (idRole != role.idRole) return false;
-        if (name != null ? !name.equals(role.name) : role.name != null) return false;
+        if (!Objects.equals(idRole, role.idRole)) return false;
+        if (!Objects.equals(name, role.name)) return false;
 
         return true;
     }

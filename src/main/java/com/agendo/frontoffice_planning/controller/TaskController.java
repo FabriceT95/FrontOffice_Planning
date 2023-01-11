@@ -10,7 +10,6 @@ import com.agendo.frontoffice_planning.controller.exception.user.UserNotOwnerExc
 import com.agendo.frontoffice_planning.controller.models.TaskDTO;
 import com.agendo.frontoffice_planning.entity.Planning;
 import com.agendo.frontoffice_planning.entity.Users;
-import com.example.frontoffice_planning.entity.*;
 import com.agendo.frontoffice_planning.service.PlanningService;
 import com.agendo.frontoffice_planning.service.ShareService;
 import com.agendo.frontoffice_planning.service.TaskService;
@@ -62,7 +61,7 @@ public class TaskController {
     /**
      * @param users    Getting authenticated user from the auth filter
      * @param idTask   Task id user is looking for
-     * @param shareDTO key object attesting sharing request
+     * @param idUser   id user requesting the GET 
      * @return taskDTO with ID if success, otherwise returns an error
      */
     @GetMapping("/task/shared/{id}")
@@ -195,7 +194,7 @@ public class TaskController {
      * Delete a Shared Task based on ID
      *
      * @param id       task id to delete
-     * @param shareDTO key object attesting sharing request
+     * @param idUser   id user requesting the remove
      * @param users    Getting authenticated user from the auth filter
      * @return HttpStatus success or not found
      */
