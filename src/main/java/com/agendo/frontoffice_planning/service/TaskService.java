@@ -11,7 +11,6 @@ import com.agendo.frontoffice_planning.controller.exception.user.UserNotOwnerExc
 import com.agendo.frontoffice_planning.controller.models.ActionDTO;
 import com.agendo.frontoffice_planning.controller.models.EventDTO;
 import com.agendo.frontoffice_planning.controller.models.TaskDTO;
-import com.example.frontoffice_planning.entity.*;
 import com.agendo.frontoffice_planning.repository.ActionRepository;
 import com.agendo.frontoffice_planning.repository.TaskRepository;
 import jakarta.transaction.Transactional;

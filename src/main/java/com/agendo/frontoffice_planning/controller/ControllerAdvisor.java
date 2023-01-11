@@ -9,7 +9,6 @@ import com.agendo.frontoffice_planning.controller.exception.task.TaskNotFoundExc
 import com.agendo.frontoffice_planning.controller.exception.user.*;
 import com.agendo.frontoffice_planning.controller.exception.planning.PlanningNotFoundException;
 import com.agendo.frontoffice_planning.controller.exception.task.TaskFailedSaveException;
-import com.example.frontoffice_planning.controller.exception.user.*;
 import com.agendo.frontoffice_planning.controller.models.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -16,7 +16,6 @@ import com.agendo.frontoffice_planning.repository.PlanningRepository;
 import com.agendo.frontoffice_planning.controller.exception.planning.PlanningNotFoundException;
 import com.agendo.frontoffice_planning.controller.exception.user.UserNotFoundException;
 import com.agendo.frontoffice_planning.controller.exception.user.UserNotOwnerException;
-import com.example.frontoffice_planning.controller.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

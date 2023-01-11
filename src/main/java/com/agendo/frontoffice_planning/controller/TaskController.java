@@ -10,7 +10,6 @@ import com.agendo.frontoffice_planning.controller.exception.user.UserNotOwnerExc
 import com.agendo.frontoffice_planning.controller.models.TaskDTO;
 import com.agendo.frontoffice_planning.entity.Planning;
 import com.agendo.frontoffice_planning.entity.Users;
-import com.example.frontoffice_planning.entity.*;
 import com.agendo.frontoffice_planning.service.PlanningService;
 import com.agendo.frontoffice_planning.service.ShareService;
 import com.agendo.frontoffice_planning.service.TaskService;
