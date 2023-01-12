@@ -84,6 +84,7 @@ public class UserService {
         newUser.setPassword(encoder.encode(signupRequest.getPassword()));
         newUser.setActivated(true);
         newUser.addRole(roleRepository.findById(1L).get());
+        newUser.setPhoto("neutral_avatar.png");
 
         Address addressDTO = new Address(signupRequest.getCity(), signupRequest.getPostalCode());
 
