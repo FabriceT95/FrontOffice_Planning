@@ -291,20 +291,20 @@ public class Users implements UserDetails {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "Users{" +
-                "idUser=" + idUser +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password=" + password +
-                ", photo='" + photo + '\'' +
-                ", dateLastLogin=" + dateLastLogin +
-                ", isActivated=" + isActivated +
-                ", roles=" + roles +
-                ", address=" + address +
-                ", planning=" + planning +
-                ", share=" + share +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Users{" +
+//                "idUser=" + idUser +
+//                ", username='" + username + '\'' +
+//                ", email='" + email + '\'' +
+//                ", password=" + password +
+//                ", photo='" + photo + '\'' +
+//                ", dateLastLogin=" + dateLastLogin +
+//                ", isActivated=" + isActivated +
+//                ", roles=" + roles +
+//                ", address=" + address +
+//                ", planning=" + planning +
+//                ", share=" + share +
+//                '}';
+//    }
 }

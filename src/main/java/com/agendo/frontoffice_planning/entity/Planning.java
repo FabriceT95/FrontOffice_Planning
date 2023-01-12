@@ -150,14 +150,14 @@ public class Planning {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "Planning{" +
-                "idPlanning=" + idPlanning +
-                ", namePlanning='" + namePlanning + '\'' +
-                ", dateCreated=" + dateCreated +
-                ", events=" + events +
-                ", tasks=" + tasks +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Planning{" +
+//                "idPlanning=" + idPlanning +
+//                ", namePlanning='" + namePlanning + '\'' +
+//                ", dateCreated=" + dateCreated +
+//                ", events=" + events +
+//                ", tasks=" + tasks +
+//                '}';
+//    }
 }

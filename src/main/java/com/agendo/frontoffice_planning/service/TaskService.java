@@ -94,7 +94,7 @@ public class TaskService {
         }
         Task task = searchedTask.get();
 
-        if (!users.getPlanning().equals(task.getPlanningByIdPlanning())) {
+        if (!users.getPlanning().getIdPlanning().equals(task.getPlanningByIdPlanning().getIdPlanning())) {
             throw new UserNotOwnerException(users.getUsername(), task.getPlanningByIdPlanning().getNamePlanning());
         }
 
